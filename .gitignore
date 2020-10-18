@@ -1,3 +1,4 @@
 /.env
 .ash_history
 .cache/
+/api/.local/*
