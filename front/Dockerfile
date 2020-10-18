@@ -8,11 +8,17 @@ ENV HOME=/${WORKDIR} \
     LANG=C.UTF-8 \
     TZ=Asia/Tokyo \
     HOST=0.0.0.0  \
-    API_URL=${API_URL}
+    API_URL=${API_URL} \
+    NPM_CONFIG_PRODUCTION=false
 
 # for fibers, gyp, preventing SAOError
 RUN apk add python make g++
 
-WORKDIR ${HOME}
+COPY package*.json ./
+RUN yarn install
+
+COPY . .
+
+RUN yarn run build
 
 EXPOSE ${CONTAINER_PORT}

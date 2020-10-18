@@ -17,13 +17,31 @@ clean_all:
 	docker-compose down --rmi all --volumes
 	docker system prune
 
-# apiへ入る
+##### API #####
 a:
 	docker-compose exec api sh
 
 db_reset:
 	docker-compose exec api db:migrate:reset
 
-# frontへ入る
+deploy_api:
+	cd api; \
+	git add -A; \
+	git commit -m 'commit for deploy'; \
+	git push heroku master
+
+heroku_db:
+	heroku pg:psql postgresql-fitted-77400 -a quiz-competition-api
+
+heroku_db_reset:
+	heroku run rails db:migrate:reset && db:seed -a quiz-competition-api
+
+##### front #####
 f:
 	docker-compose exec front sh
+
+deploy_front:
+	cd front; \
+	git add -A; \
+	git commit -m 'commit for deploy'; \
+	git push heroku master
