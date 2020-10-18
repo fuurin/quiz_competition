@@ -1,6 +1,6 @@
 <template>
   <div>
-    <button @click="getMsg">Access</button>
+    <v-btn color="secondary" @click="getMsg">Access</v-btn>
     <div v-for="(msg, i) in msgs" :key="i">
       {{ msg }}
     </div>
