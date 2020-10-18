@@ -11,6 +11,8 @@ ENV HOME=/${WORKDIR} \
     API_URL=${API_URL} \
     NPM_CONFIG_PRODUCTION=false
 
+WORKDIR ${HOME}
+
 # for fibers, gyp, preventing SAOError
 RUN apk add python make g++
 
