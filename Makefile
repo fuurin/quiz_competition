@@ -21,6 +21,9 @@ clean_all:
 a:
 	docker-compose exec api sh
 
+c:
+	docker-compose exec api rails c
+
 db_reset:
 	docker-compose exec api db:migrate:reset
 
