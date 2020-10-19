@@ -39,11 +39,16 @@ deploy_api:
 	git commit -m 'commit for deploy'; \
 	git push heroku master
 
+heroku_api_info:
+	heroku info -a quiz-competition-api
+
 heroku_db:
 	heroku pg:psql postgresql-fitted-77400 -a quiz-competition-api
 
 heroku_db_reset:
-	heroku run rails db:migrate:reset && db:seed -a quiz-competition-api
+	heroku pg:reset -a quiz-competition-api --confirm quiz-competition-api
+	heroku run -a quiz-competition-api rails db:migrate
+	heroku run -a quiz-competition-api rails db:seed
 
 ##### front #####
 f:
@@ -54,3 +59,6 @@ deploy_front:
 	git add -A; \
 	git commit -m 'commit for deploy'; \
 	git push heroku master
+
+heroku_front_info:
+	heroku info -a quiz-competition-web
