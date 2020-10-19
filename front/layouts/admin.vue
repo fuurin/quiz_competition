@@ -1,6 +1,6 @@
 <template>
   <v-app light>
-    <v-app-bar fixed app color="primary">
+    <v-app-bar fixed app>
       <v-toolbar-title v-text="title" />
     </v-app-bar>
 
@@ -19,21 +19,25 @@
 </template>
 
 <script>
-const DEFAULT_PAGE_TITLE = 'クイズ大会アプリ';
+const DEFAULT_PAGE_TITLE = 'クイズ大会アプリ 管理画面';
 
 export default {
+  head() {
+    return { title: '管理画面' };
+  },
   data() {
     return {
-      title: DEFAULT_PAGE_TITLE
+      title: DEFAULT_PAGE_TITLE,
     }
   },
   created() {
+    this.$store.dispatch('admin/verifyLogin');
     this.setListener();
   },
   methods: {
     setListener() {
       this.$nuxt.$on('setTitle', (title) => {
-        this.title = title || DEFAULT_PAGE_TITLE
+        this.title = title || DEFAULT_PAGE_TITLE;
       });
     },
   }

@@ -6,8 +6,8 @@ export default {
 
   // Global page headers (https://go.nuxtjs.dev/config-head)
   head: {
-    titleTemplate: '%s - quiz_competition',
-    title: 'quiz_competition',
+    titleTemplate: '%s - クイズ大会',
+    title: 'クイズ大会',
     meta: [
       { charset: 'utf-8' },
       { name: 'viewport', content: 'width=device-width, initial-scale=1' },
@@ -20,6 +20,7 @@ export default {
 
   // Global CSS (https://go.nuxtjs.dev/config-css)
   css: [
+    '~/assets/main.scss',
   ],
 
   // Plugins to run before rendering page (https://go.nuxtjs.dev/config-plugins)
@@ -39,6 +40,7 @@ export default {
   modules: [
     // https://go.nuxtjs.dev/axios
     '@nuxtjs/axios',
+    'cookie-universal-nuxt'
   ],
 
   // Axios module configuration (https://go.nuxtjs.dev/config-axios)
@@ -51,8 +53,8 @@ export default {
     theme: {
       themes: {
         light: {
-          primary: "#f44336",
-          secondary: "#ff9800",
+          primary: "#ff9800",
+          secondary: "#f44336",
           accent: "#ffeb3b",
           error: "#795548",
           warning: "#607d8b",

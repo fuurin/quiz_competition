@@ -1,6 +1,6 @@
 <template>
   <div>
-    <form @submit.prevent="login">
+    <form @submit.prevent="signIn">
       <v-text-field
         v-model="email"
         label="メールアドレス"
@@ -21,25 +21,26 @@
 const PAGE_TITLE = '管理画面ログイン'
 
 export default {
+  head() {
+    return { title: PAGE_TITLE };
+  },
+  layout () {
+    return 'admin'
+  },
   data() {
     return {
       email: '',
       password: ''
     }
   },
-  mounted() {
+  created() {
     this.$nuxt.$emit('setTitle', PAGE_TITLE);
   },
   methods: {
-    login() {
-      this.$axios.post('/api/admin/auth/sign_in', {
+    signIn() {
+      this.$store.dispatch('admin/signIn', {
         email: this.email,
         password: this.password
-      })
-      .then(res => {
-        alert(`ログイン！\n${this.email}\n${this.password}`);
-        console.log(res.data);
-        console.log(res.headers);
       });
     }
   }
