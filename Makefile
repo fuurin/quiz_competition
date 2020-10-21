@@ -63,7 +63,7 @@ a: # admin
 	docker-compose exec admin sh
 
 deploy_admin:
-	cd front/admin; \
+	cd admin; \
 	git add -A; \
 	git commit -m 'commit for deploy'; \
 	git push heroku master
@@ -77,7 +77,7 @@ s: # service
 	docker-compose exec service sh
 
 deploy_service:
-	cd front/service; \
+	cd service; \
 	git add -A; \
 	git commit -m 'commit for deploy'; \
 	git push heroku master
