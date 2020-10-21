@@ -11,13 +11,15 @@ make
 ```
 
 ## デプロイ
+API, Admin, Serviceの3つのものがデプロイ対象。
+これら全てで一度デプロイを済ませれば、あとは
+``` bash
+make deploy_all
+```
+で全てのデプロイを実行する。
 
 ### API
-herokuでの環境変数の設定
-``` bash
-> heroku config:set RACK_ENV=production RAILS_ENV=production RAILS_LOG_TO_STDOUT=enabled RAILS_SERVE_STATIC_FILES=enabled RAILS_MASTER_KEY=<master.keyの値> -a quiz-competition-api.git
-```
-
+上記「開発について」を参照しながらherokuでの環境変数の設定を先に行うこと。
 ``` bash
 > cd api
 > git init
@@ -28,13 +30,24 @@ herokuでの環境変数の設定
 > make deploy_api
 ```
 
-### フロントエンド
+### 管理画面 (admin)
 ``` bash
-> cd front
+> cd admin
 > git init
-> git remote add heroku https://git.heroku.com/quiz-competition-web.git
+> git remote add heroku https://git.heroku.com/quiz-competition-admin.git
 > cd ..
 
 2回目以降は次のコマンドのみ
-> make deploy_front
+> make deploy_admin
+```
+
+### サービス画面 (service)
+``` bash
+> cd service
+> git init
+> git remote add heroku https://git.heroku.com/quiz-competition-service.git
+> cd ..
+
+2回目以降は次のコマンドのみ
+> make deploy_service
 ```

@@ -17,7 +17,8 @@ services:
         WORKDIR: $WORKDIR
     environment:
       POSTGRES_PASSWORD: $POSTGRES_PASSWORD
-      API_DOMAIN: "localhost:$FRONT_PORT"
+      ADMIN_DOMAIN: "localhost:$ADMIN_PORT"
+      SERVICE_DOMAIN: "localhost:$SERVICE_PORT"
     volumes:
       - ./api:/$WORKDIR
     depends_on:
@@ -26,17 +27,32 @@ services:
       - "$API_PORT:$CONTAINER_PORT"
     command: sh -c 'rm -f tmp/pids/server.pid && bundle && rails s -b 0.0.0.0'
 
-  front:
+  admin:
     build:
-      context: ./front
+      context: ./admin
+      args:
+        WORKDIR: $WORKDIR
+        CONTAINER_PORT: $CONTAINER_PORT
+        API_URL: "http://localhost:$API_PORT/admin"
+    command: sh -c 'yarn && yarn run dev'
+    volumes:
+      - ./admin:/$WORKDIR
+    ports:
+      - "$ADMIN_PORT:$CONTAINER_PORT"
+    depends_on:
+      - api
+
+  service:
+    build:
+      context: ./service
       args:
         WORKDIR: $WORKDIR
         CONTAINER_PORT: $CONTAINER_PORT
         API_URL: "http://localhost:$API_PORT"
     command: sh -c 'yarn && yarn run dev'
     volumes:
-      - ./front:/$WORKDIR
+      - ./service:/$WORKDIR
     ports:
-      - "$FRONT_PORT:$CONTAINER_PORT"
+      - "$SERVICE_PORT:$CONTAINER_PORT"
     depends_on:
       - api

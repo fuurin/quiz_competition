@@ -18,12 +18,14 @@ clean_all:
 	docker system prune
 
 deploy_all:
-	make deploy_front
 	make deploy_api
 	make heroku_db_reset
+	make deploy_admin
+	make deploy_service
+
 
 ##### API #####
-a:
+r: # rails
 	docker-compose exec api sh
 
 c:
@@ -55,15 +57,30 @@ heroku_db_reset:
 	heroku run -a quiz-competition-api rails db:migrate
 	heroku run -a quiz-competition-api rails db:seed
 
-##### front #####
-f:
-	docker-compose exec front sh
 
-deploy_front:
-	cd front; \
+##### admin #####
+a: # admin
+	docker-compose exec admin sh
+
+deploy_admin:
+	cd front/admin; \
 	git add -A; \
 	git commit -m 'commit for deploy'; \
 	git push heroku master
 
-heroku_front_info:
-	heroku info -a quiz-competition-web
+heroku_admin_info:
+	heroku info -a quiz-competition-admin
+
+
+##### service #####
+s: # service
+	docker-compose exec service sh
+
+deploy_service:
+	cd front/service; \
+	git add -A; \
+	git commit -m 'commit for deploy'; \
+	git push heroku master
+
+heroku_service_info:
+	heroku info -a quiz-competition-service

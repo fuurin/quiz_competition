@@ -11,6 +11,8 @@ admin = Admin.create!(
   password: Rails.application.credentials.admin[:password]
 )
 
-3.times do |i|
-  QuizSet.create!(admin: admin, name: "QuizSet#{i}")
+ActiveRecord::Base.transaction do
+  3.times do |i|
+    QuizSet.create!(admin: admin, name: "QuizSet#{i}")
+  end
 end

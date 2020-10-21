@@ -1,8 +1,0 @@
-build:
-  docker:
-    web: Dockerfile
-  config:
-    WORKDIR: app
-    API_URL: https://quiz-competition-api.herokuapp.com/
-run:
-  web: yarn run start
