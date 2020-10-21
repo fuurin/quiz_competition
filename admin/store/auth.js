@@ -42,14 +42,16 @@ export const actions = {
       // ログイン対象のデータをstore
       commit('data', res.data.data);
 
+      commit('snackbar/set', 'ログインしました', { root: true });
+
       // トップページへ遷移
       this.$router.replace('/')
     } catch(error) {
       if (typeof error.response !== 'undefined' && error.response.status === 401) {
-        alert('メールアドレスかパスワードが間違っています。');
+        commit('snackbar/set', 'メールアドレスかパスワードが間違っています。', { root: true });
       } else {
         console.log(error);
-        alert('エラーが発生しました。');
+        commit('snackbar/set', 'エラーが発生しました。', { root: true });
       }
     }
   },
@@ -57,7 +59,7 @@ export const actions = {
     await this.$axios.delete('/auth/sign_out');
     this.$cookies.remove(SESSION_KEY);
     commit('resetState');
-    alert('ログアウトしました。');
+    commit('snackbar/set', 'ログアウトしました。', { root: true });
     this.$router.replace('/sign_in');
   }
 }

@@ -4,6 +4,8 @@
       <v-toolbar-title v-text="$store.state.page_title" />
     </v-app-bar>
 
+    <Snackbar />
+
     <v-main>
       <v-container>
         <transition name="page">

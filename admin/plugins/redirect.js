@@ -1,4 +1,4 @@
-export default function ({ app, store, route }) {
+export default ({ app, store, route }) => {
   const session = app.$cookies.get(store.state.auth.SESSION_KEY)
 
   if (session && route.path === '/sign_in') {
