@@ -23,8 +23,8 @@ export default {
   },
   data () {
     return {
-      pageNotFound: '404 Not Found',
-      otherError: 'An error occurred'
+      pageNotFound: 'ページが見つかりません。',
+      otherError: 'エラーが発生しました。'
     }
   },
   head () {

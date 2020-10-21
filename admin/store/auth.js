@@ -1,10 +1,21 @@
+const SESSION_KEY = '_quiz_competition_admin_session';
+
 const getDefaultState = () => {
   return {
-    email: '',
-    auth: {},
+    SESSION_KEY: SESSION_KEY,
+    data: {}
   }
 }
 export const state = getDefaultState;
+
+export const mutations = {
+  data(state, data) {
+    state.data = data;
+  },
+  resetState (state) {
+    Object.assign(state, getDefaultState);
+  }
+}
 
 export const actions = {
   async signIn({commit}, auth) {
@@ -14,23 +25,24 @@ export const actions = {
         email: auth.email,
         password: auth.password
       });
-      
-      // Cookie(Session)にログイン時データを格納
-      commit('session', {
-        email: res.data.data.email,
+
+      // 認証時セッション作成
+      this.$cookies.set(SESSION_KEY, {
         auth: {
-          accessToken: res.headers['access-token'],
-          client: res.headers['client'],
-          uid: res.headers['uid']
-        }
-      });
-      this.$cookies.set('admin-session', this.state.auth, {
+          'access-token': res.headers['access-token'],
+          'client': res.headers['client'],
+          'uid': res.headers['uid']
+        },
+        data: res.data.data
+      }, {
         path: '/',
         maxAge: res.headers['expiry'] - Math.floor(Date.now() / 1000)
       });
-      alert('ログインしました。');
 
-      // 管理画面トップを表示
+      // ログイン対象のデータをstore
+      commit('data', res.data.data);
+
+      // トップページへ遷移
       this.$router.replace('/')
     } catch(error) {
       if (typeof error.response !== 'undefined' && error.response.status === 401) {
@@ -41,33 +53,11 @@ export const actions = {
       }
     }
   },
-  verifyLogin({commit}) {
-    const session = this.$cookies.get('admin-session');
-    if (session) {
-      commit('session', session);
-      if ($nuxt.$route.path === '/sign_in') {
-        alert('すでにログインしています。');
-        this.$router.replace('/');
-      }
-    } else if($nuxt.$route.path !== '/sign_in') {
-      alert('ログインして下さい。');
-      this.$router.replace('/sign_in');
-    }
-  },
-  signOut({commit}) {
-    this.$cookies.remove('admin-session');
+  async signOut({commit}) {
+    await this.$axios.delete('/auth/sign_out');
+    this.$cookies.remove(SESSION_KEY);
     commit('resetState');
     alert('ログアウトしました。');
     this.$router.replace('/sign_in');
-  }
-}
-
-export const mutations = {
-  session(state, session) {
-    state.email = session.email;
-    state.auth = session.auth;
-  },
-  resetState (state) {
-    Object.assign(state, getDefaultState);
   }
 }

@@ -1,28 +1,20 @@
 <template>
   <div>
     <form @submit.prevent="signIn">
-      <v-text-field
-        v-model="email"
-        label="メールアドレス"
-        required
-      ></v-text-field>
-      <v-text-field
-        v-model="password"
-        type="password"
-        label="パスワード"
-        required
-      ></v-text-field>
+      <v-text-field v-model="email" label="メールアドレス" required></v-text-field>
+      <v-text-field v-model="password" type="password" label="パスワード" required ></v-text-field>
       <v-btn class="mr-4" type="submit">ログイン</v-btn>
     </form>
   </div>
 </template>
 
 <script>
-const PAGE_TITLE = '管理画面ログイン'
+const PAGE_HEAD = 'ログイン';
+const PAGE_TITLE = '管理画面ログイン';
 
 export default {
   head() {
-    return { title: 'ログイン' };
+    return { title: PAGE_HEAD };
   },
   data() {
     return {
@@ -31,7 +23,7 @@ export default {
     }
   },
   created() {
-    this.$nuxt.$emit('setTitle', PAGE_TITLE);
+    this.$store.commit('page_title', PAGE_TITLE);
   },
   methods: {
     signIn() {
