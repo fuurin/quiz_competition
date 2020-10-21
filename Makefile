@@ -17,6 +17,11 @@ clean_all:
 	docker-compose down --rmi all --volumes
 	docker system prune
 
+deploy_all:
+	make deploy_front
+	make deploy_api
+	make heroku_db_reset
+
 ##### API #####
 a:
 	docker-compose exec api sh

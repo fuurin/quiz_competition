@@ -6,7 +6,11 @@
 #   movies = Movie.create([{ name: 'Star Wars' }, { name: 'Lord of the Rings' }])
 #   Character.create(name: 'Luke', movie: movies.first)
 
-Admin.create!(
+admin = Admin.create!(
   email: Rails.application.credentials.admin[:email],
   password: Rails.application.credentials.admin[:password]
 )
+
+3.times do |i|
+  QuizSet.create!(admin: admin, name: "QuizSet#{i}")
+end

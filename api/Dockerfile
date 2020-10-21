@@ -3,7 +3,7 @@ FROM ruby:2.7.1-alpine
 ARG WORKDIR
 
 ENV RUNTIME_PACKAGES="linux-headers libxml2-dev make gcc libc-dev nodejs tzdata postgresql-dev postgresql git" \
-    DEV_PACKAGES="build-base curl-dev vim" \
+    DEV_PACKAGES="build-base curl-dev vim less" \
     HOME=/${WORKDIR} \
     LANG=C.UTF-8 \
     TZ=Asia/Tokyo \
