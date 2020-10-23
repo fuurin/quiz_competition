@@ -4,3 +4,15 @@
 .page-enter, .page-leave-active {
   opacity: 0
 }
+
+.list-enter-active, .list-leave-active {
+  transition: all 0.4s;
+}
+.list-enter, .list-leave-to {
+  opacity: 0;
+  transform: translateX(50px);
+}
+
+.list-move {
+  transition: transform 0.6s;
+}

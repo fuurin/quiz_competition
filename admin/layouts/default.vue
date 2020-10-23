@@ -1,7 +1,7 @@
 <template>
   <v-app light>
     <v-app-bar fixed app>
-      <v-toolbar-title v-text="$store.state.page_title" />
+      <v-toolbar-title class="ml-3" v-text="$store.state.page_title" />
     </v-app-bar>
 
     <Snackbar />
@@ -15,7 +15,7 @@
     </v-main>
 
     <v-footer absolute app>
-      <span>&copy; 2020</span>
+      <span>&copy; 2020 Glossom 20卒</span>
     </v-footer>
   </v-app>
 </template>
