@@ -7,6 +7,17 @@
 - master.keyをapi/config/master.keyに配置
 
 ``` bash
+make init
+```
+
+アプリが起動。
+- http://localhost:8000 => service
+- http://localhost:8080 => admin
+
+Ctrl + Cで終了
+
+2回目以降
+``` bash
 make
 ```
 
@@ -19,7 +30,7 @@ make deploy_all
 で全てのデプロイを実行する。
 
 ### API
-上記「開発について」を参照しながらherokuでの環境変数の設定を先に行うこと。
+`heroku create app`直後ならば、上記「開発について」を参照しながらherokuでの環境変数の設定を先に行うこと。
 ``` bash
 > cd api
 > git init
