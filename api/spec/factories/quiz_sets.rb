@@ -1,6 +1,6 @@
 FactoryBot.define do
   factory :quiz_set do
-    admin { nil }
-    name { "MyString" }
+    sequence(:admin) { |n| Admin.create(email: "test##{n}@glossom.co.jp", password: "password#{n}") }
+    sequence(:title) { |n| "QuizSet#{n}"}
   end
 end

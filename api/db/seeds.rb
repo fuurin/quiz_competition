@@ -13,6 +13,14 @@ admin = Admin.create!(
 
 ActiveRecord::Base.transaction do
   3.times do |i|
-    QuizSet.create!(admin: admin, title: "QuizSet#{i}")
+    FactoryBot.create(:quiz_set, admin: admin)
+  end
+end
+
+ActiveRecord::Base.transaction do
+  quiz_set = QuizSet.first
+  3.times do
+    quiz = FactoryBot.create(:quiz, quiz_set: quiz_set)
+    3.times { FactoryBot.create(:option, quiz: quiz) }
   end
 end

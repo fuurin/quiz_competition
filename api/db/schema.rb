@@ -66,7 +66,7 @@ ActiveRecord::Schema.define(version: 2020_10_24_053822) do
     t.bigint "quiz_set_id", null: false
     t.integer "number", null: false
     t.string "text", limit: 256, null: false
-    t.string "question_image"
+    t.string "image"
     t.string "answer_image"
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false

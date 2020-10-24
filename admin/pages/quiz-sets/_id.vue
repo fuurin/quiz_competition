@@ -52,10 +52,10 @@
                 small-chips
                 outlined
                 prepend-icon="mdi-file-image"
-                @change="preview_image($event, quiz.question_image)"
+                @change="preview_image($event, quiz.image)"
               ></v-file-input>
-              <v-img :src="quiz.question_image.url" 
-                    v-if="quiz.question_image.url"
+              <v-img :src="quiz.image.url" 
+                    v-if="quiz.image.url"
                     max-width="360" max-height="640" contain
                     class="ml-8 mb-8"></v-img>
               <v-file-input
@@ -93,19 +93,24 @@
 
 <script>
 
-function empty_option(is_correct_answer = false) {
+function empty_option(number = 1) {
   return  {
+    number: number,
     text: "",
-    is_correct_answer: is_correct_answer
+    is_correct_answer: false
   }
 }
 
-function empty_quiz(number = 0) {
+function empty_quiz(number = 1) {
   return {
     number: number,
     text: "",
-    options: [false,true,false].map((correct) => empty_option(correct)),
-    question_image: {
+    options: [false,true,false].map((correct) => {
+      option = empty_option();
+      if(correct) option.is_correct_answer = true;
+      return option;
+    }),
+    image: {
       url: "",
       name: "",
       type: ""
@@ -137,6 +142,7 @@ export default {
     this.$axios.get(`/quiz_sets/${this.$route.params.id}`)
       .then((res) => {
         this.quiz_set = res.data.quiz_set;
+        console.log(res.data.quizzes);
         this.$store.commit('page_title', this.quiz_set.name + ' の編集');
         if(this.quizzes.length == 0) {
           this.add_quiz();
@@ -148,19 +154,29 @@ export default {
       this.quizzes.push(empty_quiz(this.quizzes.length + 1))
     },
     add_option(quiz) {
-      quiz.options.push(empty_option())
+      quiz.options.push(empty_option(quiz.options.length + 1))
     },
     up(i) {
+      this.quizzes[i].number = i - 1;
+      this.quizzes[i-1].number = i;
       this.quizzes.splice(i-1, 2, this.quizzes[i], this.quizzes[i-1]);
     },
     down(i) {
+      this.quizzes[i].number = i + 1;
+      this.quizzes[i+1].number = i;
       this.quizzes.splice(i, 2, this.quizzes[i+1], this.quizzes[i]);
     },
     delete_quiz(i) {
       this.quizzes.splice(i, 1)
+      for (var x=i; x<this.quizzes.length; x++) {
+        this.quizzes[x].number--;
+      }
     },
     delete_option(quiz, i) {
       quiz.options.splice(i, 1)
+      for (var x=i; x<quiz.options.length; x++) {
+        this.quizzes.options[x].number--;
+      }
     },
     preview_image(file, image) {
       image.url = file ? window.URL.createObjectURL(file) : ""

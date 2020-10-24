@@ -1,8 +1,9 @@
 FactoryBot.define do
   factory :quiz do
-    quiz_set { nil }
-    text { "MyString" }
-    question_image { "MyString" }
-    answer_image { "MyString" }
+    quiz_set { create(:quiz_set) }
+    number { quiz_set.reload; quiz_set.quizzes.size + 1 }
+    sequence(:text) { |n| "Question#{n}"}
+    image { '' }
+    answer_image { '' }
   end
 end
