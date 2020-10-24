@@ -5,7 +5,6 @@
 #
 #   movies = Movie.create([{ name: 'Star Wars' }, { name: 'Lord of the Rings' }])
 #   Character.create(name: 'Luke', movie: movies.first)
-
 admin = Admin.create!(
   email: Rails.application.credentials.admin[:email],
   password: Rails.application.credentials.admin[:password]
@@ -13,16 +12,18 @@ admin = Admin.create!(
 
 ActiveRecord::Base.transaction do
   3.times do |i|
-    FactoryBot.create(:quiz_set, admin: admin)
+    QuizSet.create!(admin: admin, title: "QuizSet#{i}")
   end
 end
 
 ActiveRecord::Base.transaction do
   quiz_set = QuizSet.last
   3.times do |i|
-    quiz = FactoryBot.create(:quiz, quiz_set: quiz_set)
+    quiz = Quiz.create!(quiz_set: quiz_set, number: quiz_set.quizzes.size + 1, text: "Question#{i}")
     3.times do |j|
-      FactoryBot.create(:option, quiz: quiz, is_correct_answer: i == j)
+      Option.create!(quiz: quiz, text: "Option#{j}", number: quiz.options.size + 1, is_correct_answer: i == j)
+      quiz.reload
     end
+    quiz_set.reload
   end
 end

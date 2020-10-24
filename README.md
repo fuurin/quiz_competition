@@ -22,6 +22,11 @@ make
 ```
 
 ## デプロイ
+まず
+``` bash
+heroku login
+```
+
 API, Admin, Serviceの3つのものがデプロイ対象。
 これら全てで一度デプロイを済ませれば、あとは
 ``` bash

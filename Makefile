@@ -56,7 +56,7 @@ deploy_api:
 	cd api; \
 	git add -A; \
 	git commit -m 'commit for deploy'; \
-	git push heroku master
+	git push -f heroku master
 
 heroku_api_info:
 	heroku info -a quiz-competition-api
@@ -78,7 +78,7 @@ deploy_admin:
 	cd admin; \
 	git add -A; \
 	git commit -m 'commit for deploy'; \
-	git push heroku master
+	git push -f heroku master
 
 heroku_admin_info:
 	heroku info -a quiz-competition-admin
@@ -92,7 +92,7 @@ deploy_service:
 	cd service; \
 	git add -A; \
 	git commit -m 'commit for deploy'; \
-	git push heroku master
+	git push -f heroku master
 
 heroku_service_info:
 	heroku info -a quiz-competition-service
