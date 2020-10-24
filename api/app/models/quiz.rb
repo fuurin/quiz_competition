@@ -5,12 +5,8 @@ class Quiz < ApplicationRecord
   validates :number, presence: true, numericality: { only_integer: true, greater_than: 0 }
   validates :text, presence: true, length: { maximum: 256 }
 
-  default_scope { order(:number) }
-  scope :by_set, ->(quiz_set) { where(quiz_set: quiz_set) }
+  # mount_uploader :image, ImageUploader
+  # mount_uploader :answer_image, ImageUploader
 
-  def attributes_with_options
-    hash = attributes
-    hash[:options] = options.map { |o| o.attributes }
-    hash
-  end
+  default_scope { order(:number) }
 end

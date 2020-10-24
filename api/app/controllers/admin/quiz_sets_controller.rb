@@ -2,11 +2,11 @@ class Admin::QuizSetsController < ApplicationController
   before_action :authenticate_admin!
 
   def index
-    render json: QuizSet.by_admin(current_admin)
+    render json: current_admin.quiz_sets
   end
 
   def show
-    quiz_set = QuizSet.by_admin(current_admin).find_by(id: params[:id])
+    quiz_set = current_admin.quiz_sets.find_by(id: params[:id])
     render json: { quiz_set: quiz_set, quizzes: quiz_set&.quizzes_by_attributes }
   end
 

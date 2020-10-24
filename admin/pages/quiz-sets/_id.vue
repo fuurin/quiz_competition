@@ -24,7 +24,7 @@
               rows="2" 
               outlined>
             </v-textarea>
-            <v-card-subtitle class="pl-4 pt-0">▼ 正解ならチェック</v-card-subtitle>
+            <v-card-subtitle class="pl-4 pt-0">▼ 正解ならチェック(最低1個)</v-card-subtitle>
             <div v-for="(option, j) in quiz.options" :key="j">
               <v-row align-center>
                 <v-checkbox
@@ -140,14 +140,21 @@ export default {
   },
   data () {
     return {
-      quiz_set: {},
+      quiz_set: { title: "" },
       quizzes: []
     }
   },
   created() {
     this.$axios.get(`/quiz_sets/${this.$route.params.id}`)
       .then((res) => {
+        if (res.data.quiz_set === null) {
+          this.$store.commit('snackbar/set', 'このクイズ集は存在しません。');
+          this.$router.replace('/');
+          return;
+        }
+
         this.quiz_set = res.data.quiz_set;
+
         this.$store.commit('page_title', this.quiz_set.title + ' の編集');
         this.quizzes = res.data.quizzes.map((q) => {
           var quiz = empty_quiz(q.number);
@@ -197,12 +204,23 @@ export default {
       image.name = file ? file.name : ""
       image.type = file ? file.type : ""
     },
-    save() {
-      this.$store.commit('snackbar/set', '保存しました')
+    async save() {
+      this.$store.commit('snackbar/set', '保存中...')
+      return await this.$axios.post('/quizzes', {
+        quiz_set: this.quiz_set,
+        quizzes: this.quizzes
+      }).then(() => {
+        this.$store.commit('snackbar/set', '保存しました。')
+        return true
+      }).catch(() => {
+        this.$store.commit('snackbar/set', '保存に失敗しました。')
+        return false
+      });
     },
-    save_and_back() {
-      this.save()
-      this.$router.go(-1)
+    async save_and_back() {
+      if (await this.save() === true) {
+        this.$router.go(-1)
+      }
     }
   }
 }
