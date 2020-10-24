@@ -22,6 +22,7 @@ RUN yarn install
 
 COPY . .
 
+# make initでnuxtがないと怒られたときはコメントアウトしてみる
 RUN yarn run build
 # ここまでをコメントアウト
 

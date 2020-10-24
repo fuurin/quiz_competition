@@ -14,7 +14,7 @@
                 <v-icon v-text="'mdi-head-question-outline'"></v-icon>
               </v-list-item-icon>
               <v-list-item-content>
-                <v-list-item-title v-text="quiz_set.name"></v-list-item-title>
+                <v-list-item-title v-text="quiz_set.title"></v-list-item-title>
               </v-list-item-content>
               <v-btn :to="{ name: 'quiz-sets-id', params: { id: quiz_set.id } }">
                 <v-icon>mdi-pencil</v-icon>

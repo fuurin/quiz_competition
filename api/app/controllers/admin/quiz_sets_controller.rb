@@ -7,7 +7,9 @@ class Admin::QuizSetsController < ApplicationController
 
   def show
     quiz_set = QuizSet.by_admin(current_admin).find(params[:id])
-    render json: { quiz_set: quiz_set }
+    quizzes = Quiz.by_set(quiz_set).each_with_object([]) do |quiz, a|
+    end
+    render json: { quiz_set: quiz_set, quizzes: quizzes }
   end
 
   def create

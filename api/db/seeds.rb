@@ -13,6 +13,6 @@ admin = Admin.create!(
 
 ActiveRecord::Base.transaction do
   3.times do |i|
-    QuizSet.create!(admin: admin, name: "QuizSet#{i}")
+    QuizSet.create!(admin: admin, title: "QuizSet#{i}")
   end
 end

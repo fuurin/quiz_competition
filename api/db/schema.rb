@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2020_10_20_142852) do
+ActiveRecord::Schema.define(version: 2020_10_24_053822) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -42,13 +42,40 @@ ActiveRecord::Schema.define(version: 2020_10_20_142852) do
     t.index ["uid", "provider"], name: "index_admins_on_uid_and_provider", unique: true
   end
 
+  create_table "options", force: :cascade do |t|
+    t.bigint "quiz_id", null: false
+    t.integer "number", null: false
+    t.string "text", limit: 128, null: false
+    t.boolean "is_correct_answer", default: false, null: false
+    t.datetime "created_at", precision: 6, null: false
+    t.datetime "updated_at", precision: 6, null: false
+    t.index ["number", "quiz_id"], name: "index_options_on_number_and_quiz_id", unique: true
+    t.index ["number"], name: "index_options_on_number"
+    t.index ["quiz_id"], name: "index_options_on_quiz_id"
+  end
+
   create_table "quiz_sets", force: :cascade do |t|
     t.bigint "admin_id", null: false
-    t.string "name", limit: 128, null: false
+    t.string "title", limit: 128, null: false
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
     t.index ["admin_id"], name: "index_quiz_sets_on_admin_id"
   end
 
+  create_table "quizzes", force: :cascade do |t|
+    t.bigint "quiz_set_id", null: false
+    t.integer "number", null: false
+    t.string "text", limit: 256, null: false
+    t.string "question_image"
+    t.string "answer_image"
+    t.datetime "created_at", precision: 6, null: false
+    t.datetime "updated_at", precision: 6, null: false
+    t.index ["number", "quiz_set_id"], name: "index_quizzes_on_number_and_quiz_set_id", unique: true
+    t.index ["number"], name: "index_quizzes_on_number"
+    t.index ["quiz_set_id"], name: "index_quizzes_on_quiz_set_id"
+  end
+
+  add_foreign_key "options", "quizzes"
   add_foreign_key "quiz_sets", "admins"
+  add_foreign_key "quizzes", "quiz_sets"
 end

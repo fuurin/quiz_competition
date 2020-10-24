@@ -1,13 +1,13 @@
 <template>
   <v-container class="ma-3">
     <transition-group name="list">
-      <div v-for="(quiz, i) in quizes" :key="quiz.number">
+      <div v-for="(quiz, i) in quizzes" :key="quiz.number">
         <v-card class="my-4 px-1" outlined shaped elevation=2>
           <div class="d-flex justify-space-between" align-center>
             <div class="d-flex justify-start">
               <v-card-title>第 {{ i + 1 }} 問</v-card-title>
               <v-icon v-if="i>0" @click="up(i)">mdi-arrow-up-bold</v-icon>
-              <v-icon v-if="i < quizes.length - 1" @click="down(i)" class="ml-1">mdi-arrow-down-bold</v-icon>
+              <v-icon v-if="i < quizzes.length - 1" @click="down(i)" class="ml-1">mdi-arrow-down-bold</v-icon>
             </div>
             <div class="mt-5 mr-4">
               <v-icon @click="delete_quiz(i)">mdi-close</v-icon>
@@ -130,7 +130,7 @@ export default {
   data () {
     return {
       quiz_set: {},
-      quizes: []
+      quizzes: []
     }
   },
   created() {
@@ -138,26 +138,26 @@ export default {
       .then((res) => {
         this.quiz_set = res.data.quiz_set;
         this.$store.commit('page_title', this.quiz_set.name + ' の編集');
-        if(this.quizes.length == 0) {
+        if(this.quizzes.length == 0) {
           this.add_quiz();
         }
       });
   },
   methods: {
     add_quiz() {
-      this.quizes.push(empty_quiz(this.quizes.length + 1))
+      this.quizzes.push(empty_quiz(this.quizzes.length + 1))
     },
     add_option(quiz) {
       quiz.options.push(empty_option())
     },
     up(i) {
-      this.quizes.splice(i-1, 2, this.quizes[i], this.quizes[i-1]);
+      this.quizzes.splice(i-1, 2, this.quizzes[i], this.quizzes[i-1]);
     },
     down(i) {
-      this.quizes.splice(i, 2, this.quizes[i+1], this.quizes[i]);
+      this.quizzes.splice(i, 2, this.quizzes[i+1], this.quizzes[i]);
     },
     delete_quiz(i) {
-      this.quizes.splice(i, 1)
+      this.quizzes.splice(i, 1)
     },
     delete_option(quiz, i) {
       quiz.options.splice(i, 1)
