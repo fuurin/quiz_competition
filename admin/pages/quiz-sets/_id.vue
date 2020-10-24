@@ -10,7 +10,10 @@
               <v-icon v-if="i < quizzes.length - 1" @click="down(i)" class="ml-1">mdi-arrow-down-bold</v-icon>
             </div>
             <div class="mt-5 mr-4">
-              <v-icon @click="delete_quiz(i)">mdi-close</v-icon>
+              <v-icon 
+                v-if="quizzes.length > 1"
+                @click="delete_quiz(i)">
+                mdi-close</v-icon>
             </div>
           </div>
           <v-container class="px-4 py-0">
@@ -35,8 +38,11 @@
                   outlined
                   class="mr-2">
                 </v-text-field>
-                <div>
-                  <v-icon class="mr-3" @click="delete_option(quiz, j)">mdi-close</v-icon>
+                <div class="mr-3">
+                  <v-icon 
+                    v-if="quiz.options.length > 2" 
+                    @click="delete_option(quiz, j)">
+                    mdi-close</v-icon>
                 </div>
               </v-row>
             </div>
@@ -105,9 +111,9 @@ function empty_quiz(number = 1) {
   return {
     number: number,
     text: "",
-    options: [false,true,false].map((correct) => {
-      option = empty_option();
-      if(correct) option.is_correct_answer = true;
+    options: [1,2,3].map((i) => {
+      const option = empty_option(i);
+      option.is_correct_answer = (i % 2 == 0);
       return option;
     }),
     image: {
@@ -142,11 +148,19 @@ export default {
     this.$axios.get(`/quiz_sets/${this.$route.params.id}`)
       .then((res) => {
         this.quiz_set = res.data.quiz_set;
-        console.log(res.data.quizzes);
-        this.$store.commit('page_title', this.quiz_set.name + ' の編集');
-        if(this.quizzes.length == 0) {
-          this.add_quiz();
-        }
+        this.$store.commit('page_title', this.quiz_set.title + ' の編集');
+        this.quizzes = res.data.quizzes.map((q) => {
+          var quiz = empty_quiz(q.number);
+          quiz.text = q.text
+          quiz.options = q.options.map((o) => {
+            var option = empty_option(o.number);
+            option.text = o.text;
+            option.is_correct_answer = o.is_correct_answer;
+            return option
+          });
+          return quiz;
+        });
+        if(this.quizzes.length == 0) this.add_quiz();
       });
   },
   methods: {
@@ -157,13 +171,13 @@ export default {
       quiz.options.push(empty_option(quiz.options.length + 1))
     },
     up(i) {
-      this.quizzes[i].number = i - 1;
-      this.quizzes[i-1].number = i;
+      this.quizzes[i].number = i;
+      this.quizzes[i-1].number = i + 1;
       this.quizzes.splice(i-1, 2, this.quizzes[i], this.quizzes[i-1]);
     },
     down(i) {
-      this.quizzes[i].number = i + 1;
-      this.quizzes[i+1].number = i;
+      this.quizzes[i].number = i + 2;
+      this.quizzes[i+1].number = i + 1;
       this.quizzes.splice(i, 2, this.quizzes[i+1], this.quizzes[i]);
     },
     delete_quiz(i) {
@@ -175,7 +189,7 @@ export default {
     delete_option(quiz, i) {
       quiz.options.splice(i, 1)
       for (var x=i; x<quiz.options.length; x++) {
-        this.quizzes.options[x].number--;
+        quiz.options[x].number--;
       }
     },
     preview_image(file, image) {

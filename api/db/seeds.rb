@@ -18,9 +18,11 @@ ActiveRecord::Base.transaction do
 end
 
 ActiveRecord::Base.transaction do
-  quiz_set = QuizSet.first
-  3.times do
+  quiz_set = QuizSet.last
+  3.times do |i|
     quiz = FactoryBot.create(:quiz, quiz_set: quiz_set)
-    3.times { FactoryBot.create(:option, quiz: quiz) }
+    3.times do |j|
+      FactoryBot.create(:option, quiz: quiz, is_correct_answer: i == j)
+    end
   end
 end

@@ -6,7 +6,7 @@ up:
 init:
 	docker-compose down
 	docker-compose up
-	make db_reset
+	make db_init
 
 # コンテナに加え、それらに結びつくボリューム(DB, registry等)も削除
 clean:
@@ -20,7 +20,7 @@ clean_all:
 
 deploy_all:
 	make deploy_api
-	make heroku_db_reset
+	make heroku_db_init
 	make deploy_admin
 	make deploy_service
 
@@ -32,9 +32,19 @@ r: # rails
 c:
 	docker-compose exec api rails c
 
-db_reset:
+# migrationファイルを読み込んでschemaを更新しつつseedする
+db_init:
 	docker-compose exec api rails db:migrate:reset
 	docker-compose exec api rails db:seed
+
+# migrationを最新まで進める
+db_migrate:
+	docker-compose exec api rails db:migrate
+
+# 今あるschemaをそのまま使ってDBをリセットする
+# db:resetはseedも実行してくれる
+db_reset:
+	docker-compose exec api rails db:reset
 
 ce:
 	docker-compose exec api rails credendials:edit
@@ -54,7 +64,7 @@ heroku_api_info:
 heroku_db:
 	heroku pg:psql postgresql-fitted-77400 -a quiz-competition-api
 
-heroku_db_reset:
+heroku_db_init:
 	heroku pg:reset -a quiz-competition-api --confirm quiz-competition-api
 	heroku run -a quiz-competition-api rails db:migrate
 	heroku run -a quiz-competition-api rails db:seed

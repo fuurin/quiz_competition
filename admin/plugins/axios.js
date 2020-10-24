@@ -1,4 +1,4 @@
-export default ({ $axios, store, app }) => {
+export default ({ $axios, store, app, route }) => {
   $axios.onRequest(config => {
     const session = app.$cookies.get(store.state.auth.SESSION_KEY);
     if (session) config.headers = session.auth;
@@ -22,5 +22,13 @@ export default ({ $axios, store, app }) => {
       path: '/',
       maxAge: res.headers['expiry'] - Math.floor(Date.now() / 1000)
     });
+  });
+
+  $axios.onError(e => {
+    if(e.response.status === 401 && route.path !== '/sign_in') {
+      app.$cookies.remove(store.state.auth.SESSION_KEY);
+      alert('ログインして下さい。');
+      window.location.href = '/sign_in';
+    }
   });
 }
