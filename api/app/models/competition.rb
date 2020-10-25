@@ -17,7 +17,7 @@ class Competition < ApplicationRecord
 
   def set_rid
     loop do
-      self.rid = SecureRandom.urlsafe_base64(Settings.models.competition.rid_length)
+      self.rid = SecureRandom.alphanumeric(Settings.models.competition.rid_length)
       return unless Competition.find_by(rid: rid)
     end
   end

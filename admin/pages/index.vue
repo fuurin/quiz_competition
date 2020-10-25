@@ -5,24 +5,11 @@
       <v-btn @click="sign_out">ログアウト</v-btn>
     </v-container>
 
-    <v-dialog v-model="dialog" max-width="500" @click:outside="unselect_quiz_set">
-      <v-card v-if="selected_quiz_set">
-        <v-card-title class="headline">
-          クイズ大会「{{ selected_quiz_set.title }}」を開始しますか？
-        </v-card-title>
-        <v-card-actions>
-          <v-spacer></v-spacer>
-          <v-btn text @click="unselect_quiz_set">いいえ</v-btn>
-          <v-btn color="green darken-1" text @click="start_competition">はい</v-btn>
-        </v-card-actions>
-      </v-card>
-    </v-dialog>
-
     <v-container>
       <v-card class="px-3">
         <v-list>
           <div v-for="(quiz_set, i) in quiz_sets" :key="i">
-            <v-divider v-if="i>0"></v-divider>
+            <v-divider v-if="i>0" class="my-2"></v-divider>
             <v-list-item>
               <v-list-item-icon>
                 <v-icon v-text="'mdi-head-question-outline'"></v-icon>
@@ -41,6 +28,22 @@
         </v-list>
       </v-card>
     </v-container>
+
+    <v-dialog v-model="dialog"
+      max-width="500"
+      @click:outside="unselect_quiz_set" 
+      @keydown.enter="start_competition">
+      <v-card v-if="selected_quiz_set">
+        <v-card-title class="headline">
+          クイズ大会「{{ selected_quiz_set.title }}」を開始しますか？
+        </v-card-title>
+        <v-card-actions>
+          <v-spacer></v-spacer>
+          <v-btn text @click="unselect_quiz_set">いいえ</v-btn>
+          <v-btn color="green darken-1" text @click="start_competition">はい</v-btn>
+        </v-card-actions>
+      </v-card>
+    </v-dialog>
   </div>
 </template>
 
@@ -77,6 +80,9 @@ export default {
     start_competition() {
       this.$axios.post('/competitions', { quiz_set_id: this.selected_quiz_set.id })
         .then((res) => {
+          if (res.status == 200) {
+            this.$store.commit('snackbar/set', 'すでに開始されています。')
+          }
           this.$router.push(`/competitions/${res.data.rid}`)
         })
         .catch((error) => {

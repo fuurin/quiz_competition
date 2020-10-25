@@ -13,6 +13,6 @@ class Quiz < ApplicationRecord
   scope :by_quiz_set, ->(quiz_set) { where(quiz_set: quiz_set) }
 
   def next_quiz
-    by_quiz_set(quiz_set).where("number > #{number}").first
+    quiz_set.quizzes.where("number > #{number}").first
   end
 end

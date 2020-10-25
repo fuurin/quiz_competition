@@ -4,16 +4,19 @@ class Admin::CompetitionsController < ApplicationController
   before_action :set_competition, except: :create
 
   def show
-    render json: info(@competition.quiz)
+    render json: quiz_info(@competition.quiz)
   end
 
   def create
-    # 存在したら200返して退会ページへ飛ばす
-    render json: { rid: Competition.create!(quiz_set: @quiz_set).rid }, status: 201
+    if (competition = Competition.find_by(quiz_set: @quiz_set))
+      render json: { rid: competition.rid }, status: 200
+    else
+      render json: { rid: Competition.create!(quiz_set: @quiz_set).rid }, status: 201
+    end
   end
 
   def update
-    case @competition.status
+    case @competition.status.to_sym
     when :question
       to_answer
     when :answer
@@ -32,7 +35,7 @@ class Admin::CompetitionsController < ApplicationController
   private
 
   def set_quiz_set
-    unless (@quiz_set = QuizSet.by_admin(current_admin).find_by(id: params[:quiz_set_id]))
+    unless (@quiz_set = current_admin.quiz_sets.find_by(id: params[:quiz_set_id]))
       render json: { error: 'quiz set not found' }, status: 404
     end
 
@@ -47,26 +50,36 @@ class Admin::CompetitionsController < ApplicationController
     end
   end
 
-  def info(quiz)
+  def quiz_info(quiz)
     { 
       status: @competition.status.to_s,
+      title: @competition.quiz_set.title,
+      total_quiz_num: @competition.quiz_set.quizzes.size,
       quiz: quiz.to_json(only: %i[number text]),
       options: quiz.options.to_json(only: %i[number text is_correct_answer])
     }
   end
 
+  def result_info
+    {
+      status: @competition.status, 
+      title: @competition.quiz_set.title,
+      total_quiz_num: @competition.quiz_set.quizzes.size
+    }
+  end
+
   def to_answer
-    competition.update!(status: :answer)
-    render json: info(competition.quiz)
+    @competition.update!(status: :answer)
+    render json: quiz_info(@competition.quiz)
   end
 
   def to_question(next_quiz)
-    competition.update!(quiz: next_quiz, status: :question)
-    render json: info(quiz)
+    @competition.update!(quiz: next_quiz, status: :question)
+    render json: quiz_info(next_quiz)
   end
 
   def to_result
-    competition.update!(status: :result)
-    render json: { status: competition.status }
+    @competition.update!(status: :result)
+    render json: result_info
   end
 end
