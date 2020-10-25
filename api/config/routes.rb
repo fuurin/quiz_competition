@@ -6,11 +6,11 @@ Rails.application.routes.draw do
       sessions: 'admin/auth/sessions'
     }
     resources :quiz_sets, except: %i[new edit]
-    resources :quizzes, only: :create
-    resources :competitions, only: %i[show create update]
+    resource :quizzes, only: :create
+    resource :competitions, only: %i[show create update]
   end
   
   scope :service, module: 'service' do
-    resources :competitions, only: :show
+    resource :competitions, only: :show
   end
 end

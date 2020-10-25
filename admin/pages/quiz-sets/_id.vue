@@ -112,9 +112,9 @@ function empty_quiz(number = 1) {
     number: number,
     text: "",
     options: [1,2,3].map((i) => {
-      const option = empty_option(i);
-      option.is_correct_answer = (i % 2 == 0);
-      return option;
+      const option = empty_option(i)
+      option.is_correct_answer = (i % 2 == 0)
+      return option
     }),
     image: {
       url: "",
@@ -131,7 +131,7 @@ function empty_quiz(number = 1) {
 
 export default {
   head() {
-    return { title: 'クイズ集の編集' };
+    return { title: 'クイズ集の編集' }
   },
   validate({ params }) {
     // 数値でなければならない
@@ -146,28 +146,30 @@ export default {
   created() {
     this.$axios.get(`/quiz_sets/${this.$route.params.id}`)
       .then((res) => {
-        if (res.data.quiz_set === null) {
-          this.$store.commit('snackbar/set', 'このクイズ集は存在しません。');
-          this.$router.replace('/');
-          return;
-        }
-
-        this.quiz_set = res.data.quiz_set;
-
-        this.$store.commit('page_title', this.quiz_set.title + ' の編集');
+        this.quiz_set = res.data.quiz_set
+        this.$store.commit('page_title', this.quiz_set.title + ' の編集')
         this.quizzes = res.data.quizzes.map((q) => {
-          var quiz = empty_quiz(q.number);
+          var quiz = empty_quiz(q.number)
           quiz.text = q.text
           quiz.options = q.options.map((o) => {
-            var option = empty_option(o.number);
-            option.text = o.text;
-            option.is_correct_answer = o.is_correct_answer;
+            var option = empty_option(o.number)
+            option.text = o.text
+            option.is_correct_answer = o.is_correct_answer
             return option
-          });
-          return quiz;
-        });
-        if(this.quizzes.length == 0) this.add_quiz();
-      });
+          })
+          return quiz
+        })
+        if(this.quizzes.length == 0) this.add_quiz()
+      })
+      .catch((error) => {
+        if (typeof error.response !== 'undefined' && error.response.status === 404) {
+          this.$store.commit('snackbar/set', 'このクイズ集は存在しません。')
+        } else {
+          console.log(error.response)
+          this.$store.commit('snackbar/set', 'エラーが発生しました。')
+        }
+        this.$router.replace('/')
+      })
   },
   methods: {
     add_quiz() {
@@ -177,25 +179,25 @@ export default {
       quiz.options.push(empty_option(quiz.options.length + 1))
     },
     up(i) {
-      this.quizzes[i].number = i;
-      this.quizzes[i-1].number = i + 1;
-      this.quizzes.splice(i-1, 2, this.quizzes[i], this.quizzes[i-1]);
+      this.quizzes[i].number = i
+      this.quizzes[i-1].number = i + 1
+      this.quizzes.splice(i-1, 2, this.quizzes[i], this.quizzes[i-1])
     },
     down(i) {
-      this.quizzes[i].number = i + 2;
-      this.quizzes[i+1].number = i + 1;
-      this.quizzes.splice(i, 2, this.quizzes[i+1], this.quizzes[i]);
+      this.quizzes[i].number = i + 2
+      this.quizzes[i+1].number = i + 1
+      this.quizzes.splice(i, 2, this.quizzes[i+1], this.quizzes[i])
     },
     delete_quiz(i) {
       this.quizzes.splice(i, 1)
       for (var x=i; x<this.quizzes.length; x++) {
-        this.quizzes[x].number--;
+        this.quizzes[x].number--
       }
     },
     delete_option(quiz, i) {
       quiz.options.splice(i, 1)
       for (var x=i; x<quiz.options.length; x++) {
-        quiz.options[x].number--;
+        quiz.options[x].number--
       }
     },
     preview_image(file, image) {
@@ -214,7 +216,7 @@ export default {
       }).catch(() => {
         this.$store.commit('snackbar/set', '保存に失敗しました。')
         return false
-      });
+      })
     },
     async save_and_back() {
       if (await this.save() === true) {

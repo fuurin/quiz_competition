@@ -2,8 +2,22 @@
   <div>
     <v-container class="d-flex justify-space-between" align-center>
       <h1>クイズ集一覧</h1>
-      <v-btn @click="signOut">ログアウト</v-btn>
+      <v-btn @click="sign_out">ログアウト</v-btn>
     </v-container>
+
+    <v-dialog v-model="dialog" max-width="500" @click:outside="unselect_quiz_set">
+      <v-card v-if="selected_quiz_set">
+        <v-card-title class="headline">
+          クイズ大会「{{ selected_quiz_set.title }}」を開始しますか？
+        </v-card-title>
+        <v-card-actions>
+          <v-spacer></v-spacer>
+          <v-btn text @click="unselect_quiz_set">いいえ</v-btn>
+          <v-btn color="green darken-1" text @click="start_competition">はい</v-btn>
+        </v-card-actions>
+      </v-card>
+    </v-dialog>
+
     <v-container>
       <v-card class="px-3">
         <v-list>
@@ -19,7 +33,7 @@
               <v-btn :to="{ name: 'quiz-sets-id', params: { id: quiz_set.id } }">
                 <v-icon>mdi-pencil</v-icon>
               </v-btn>
-              <v-btn class="ml-3">
+              <v-btn class="ml-3" @click="select_quiz_set(quiz_set)">
                 <v-icon>mdi-account-group</v-icon>
               </v-btn>
             </v-list-item>
@@ -31,24 +45,45 @@
 </template>
 
 <script>
-const PAGE_TITLE = 'クイズ大会アプリ 管理画面';
+const PAGE_TITLE = 'クイズ大会アプリ 管理画面'
 
 export default {
   data () {
     return {
-      quiz_sets: []
+      quiz_sets: [],
+      selected_quiz_set: null,
+      dialog: false,
     }
   },
   created() {
-    this.$store.commit('page_title', PAGE_TITLE);
+    this.$store.commit('page_title', PAGE_TITLE)
     this.$axios.get('/quiz_sets')
       .then((res) => {
-        this.quiz_sets = res.data;
-      });
+        this.quiz_sets = res.data
+      })
   },
   methods: {
-    signOut () {
-      this.$store.dispatch('auth/signOut');
+    sign_out () {
+      this.$store.dispatch('auth/sign_out')
+    },
+    select_quiz_set (quiz_set) {
+      this.selected_quiz_set = quiz_set
+      this.dialog = true
+    },
+    unselect_quiz_set () {
+      this.selected_quiz_set = null
+      this.dialog = false
+    },
+    start_competition() {
+      this.$axios.post('/competitions', { quiz_set_id: this.selected_quiz_set.id })
+        .then((res) => {
+          this.$router.push(`/competitions/${res.data.rid}`)
+        })
+        .catch((error) => {
+          console.log(error.response)
+          this.$store.commit('snackbar/set', 'エラーが発生しました。')
+        })
+        .finally(() => { this.dialog = false })
     }
   }
 }

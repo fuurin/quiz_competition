@@ -10,7 +10,7 @@
 </template>
 
 <script>
-const PAGE_TITLE = '動作確認ページ';
+const PAGE_TITLE = '動作確認ページ'
 
 export default {
   head() {
@@ -22,7 +22,7 @@ export default {
     }
   },
   mounted() {
-    this.$nuxt.$emit('setTitle', PAGE_TITLE);
+    this.$nuxt.$emit('setTitle', PAGE_TITLE)
   },
   methods: {
     async getMsg () {

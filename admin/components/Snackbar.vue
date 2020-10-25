@@ -20,9 +20,9 @@
     mounted() {
       this.$store.subscribe((mutation, state) => {
         if(mutation.type === 'snackbar/set') {
-          this.is_active = true;
+          this.is_active = true
         }
-      });
+      })
     },
   }
 </script>

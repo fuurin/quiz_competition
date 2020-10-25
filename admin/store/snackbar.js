@@ -1,4 +1,4 @@
-const DEFAULT_TIMEOUT = 2000;
+const DEFAULT_TIMEOUT = 2000
 
 export const state = () => {
   return {
@@ -13,6 +13,6 @@ export const getters = {
 
 export const mutations = {
   set(state, text) {
-    state.text = text;
+    state.text = text
   }
 }

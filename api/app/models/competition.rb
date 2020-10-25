@@ -1,14 +1,13 @@
 class Competition < ApplicationRecord
-  has_one :quiz_set
-  has_one :quiz
+  belongs_to :quiz_set
+  belongs_to :quiz
 
   enum status: { question: 0, answer: 1, result: 2 }
 
   validates :status, presence: true
   validates :rid, presence: true
 
-  before_save :set_first_quiz
-  before_save :set_rid
+  before_create :set_first_quiz, :set_rid
 
   private
 
@@ -18,7 +17,7 @@ class Competition < ApplicationRecord
 
   def set_rid
     loop do
-      self.rid = SecureRandom.base64(Settings.models.competition.rid_length)
+      self.rid = SecureRandom.urlsafe_base64(Settings.models.competition.rid_length)
       return unless find_by(rid: rid)
     end
   end

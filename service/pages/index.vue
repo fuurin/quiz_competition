@@ -12,7 +12,7 @@ const PAGE_TITLE = 'クイズ大会の名前'
 
 export default {
   mounted() {
-    this.$nuxt.$emit('setTitle', PAGE_TITLE);
+    this.$nuxt.$emit('setTitle', PAGE_TITLE)
   },
 }
 </script>

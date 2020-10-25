@@ -1,4 +1,4 @@
-const DEFAULT_PAGE_TITLE = 'クイズ大会アプリ 管理画面';
+const DEFAULT_PAGE_TITLE = 'クイズ大会アプリ 管理画面'
 
 export const state = () => {
   return {
@@ -8,6 +8,6 @@ export const state = () => {
 
 export const mutations = {
   page_title(state, page_title) {
-    state.page_title = page_title;
+    state.page_title = page_title
   }
 }

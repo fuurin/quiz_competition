@@ -27,7 +27,7 @@ module App
     # Localize
     config.time_zone = ENV.fetch('TZ') { 'UTC' }
     config.active_record.default_timezone = :utc
-    config.i18n.default_locale = :ja
+    # config.i18n.default_locale = :ja
 
     config.add_autoload_paths_to_load_path = false
 

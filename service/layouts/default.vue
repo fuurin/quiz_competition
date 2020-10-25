@@ -19,7 +19,7 @@
 </template>
 
 <script>
-const DEFAULT_PAGE_TITLE = 'クイズ大会アプリ';
+const DEFAULT_PAGE_TITLE = 'クイズ大会アプリ'
 
 export default {
   data() {
@@ -28,13 +28,13 @@ export default {
     }
   },
   created() {
-    this.setListener();
+    this.setListener()
   },
   methods: {
     setListener() {
       this.$nuxt.$on('setTitle', (title) => {
         this.title = title || DEFAULT_PAGE_TITLE
-      });
+      })
     },
   }
 }
