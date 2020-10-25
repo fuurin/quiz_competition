@@ -7,7 +7,7 @@ class Competition < ApplicationRecord
   validates :status, presence: true
   validates :rid, presence: true
 
-  before_create :set_first_quiz, :set_rid
+  before_validation :set_first_quiz, :set_rid, on: :create
 
   private
 
@@ -18,7 +18,7 @@ class Competition < ApplicationRecord
   def set_rid
     loop do
       self.rid = SecureRandom.urlsafe_base64(Settings.models.competition.rid_length)
-      return unless find_by(rid: rid)
+      return unless Competition.find_by(rid: rid)
     end
   end
 end

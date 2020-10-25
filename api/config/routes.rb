@@ -7,10 +7,10 @@ Rails.application.routes.draw do
     }
     resources :quiz_sets, except: %i[new edit]
     resource :quizzes, only: :create
-    resource :competitions, only: %i[show create update]
+    resources :competitions, param: :rid, only: %i[show create update destroy]
   end
   
   scope :service, module: 'service' do
-    resource :competitions, only: :show
+    resources :competitions, param: :rid, only: :show
   end
 end

@@ -13,9 +13,9 @@ export default {
   head() {
     return { title: 'クイズ大会 運営画面' }
   },
-  validate({ params }) {
-    return params.rid.length === 24
-  },
+  // validate({ params }) {
+  //   return params.rid.length === 24
+  // },
   data () {
     return {
       status: null,

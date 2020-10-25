@@ -8,6 +8,7 @@ class Admin::CompetitionsController < ApplicationController
   end
 
   def create
+    # 存在したら200返して退会ページへ飛ばす
     render json: { rid: Competition.create!(quiz_set: @quiz_set).rid }, status: 201
   end
 
@@ -48,7 +49,7 @@ class Admin::CompetitionsController < ApplicationController
 
   def info(quiz)
     { 
-      status: competition.status.to_s,
+      status: @competition.status.to_s,
       quiz: quiz.to_json(only: %i[number text]),
       options: quiz.options.to_json(only: %i[number text is_correct_answer])
     }
