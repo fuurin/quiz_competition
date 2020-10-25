@@ -9,28 +9,31 @@ class Admin::QuizzesController < ApplicationController
     begin
       ActiveRecord::Base.transaction do
         quiz_set.quizzes.destroy_all
-        params['quizzes'].each do |quiz_hash|
-          quiz = Quiz.create!(
+
+        bulk = params['quizzes'].each_with_object({quizzes: [], options: []}) do |quiz_hash, bulk|
+          bulk[:quizzes] << (quiz = Quiz.new(
             quiz_set: quiz_set,
             number: quiz_hash['number'],
             text: quiz_hash['text']
-          )
+          ))
 
           has_answer = false
           quiz_hash['options'].each do |option_hash|
-            option = Option.create!(
+            bulk[:options] << (option = Option.new(
               quiz: quiz,
               number: option_hash['number'],
               text: option_hash['text'],
               is_correct_answer: option_hash['is_correct_answer']
-            )
+            ))
             has_answer ||= option.is_correct_answer
           end
           
           unless has_answer
-            raise QuestionMustHaveAnswerError
+            raise QuizMustHaveAnswerError
           end
         end
+        Quiz.import! bulk[:quizzes]
+        Option.import! bulk[:options]
       end
     rescue StandardError => e
       puts e
@@ -38,7 +41,7 @@ class Admin::QuizzesController < ApplicationController
     end
   end
 
-  class QuestionMustHaveAnswerError < StandardError
+  class QuizMustHaveAnswerError < StandardError
     def initialize(msg='One question must have at least one correct answer option.')
       super(msg)
     end

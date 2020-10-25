@@ -1,6 +1,10 @@
 <template>
   <div>
-    <v-snackbar v-model="is_active" :timeout="$store.state.snackbar.timeout" :top="true">
+    <v-snackbar 
+      v-model="is_active" 
+      :timeout="$store.state.snackbar.timeout" 
+      transition="scroll-y-reverse-transition" 
+      :top="true">
       {{ $store.state.snackbar.text }}
     </v-snackbar>
   </div>
