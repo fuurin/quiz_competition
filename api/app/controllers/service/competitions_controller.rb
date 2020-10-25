@@ -6,8 +6,10 @@ class Service::CompetitionsController < ApplicationController
     if competition.result?
       result, users_map = competition.result_and_users_map
       render json: {
+        user_name: current_user.name,
         status: competition.status,
-        title: competition.quiz_set.title
+        title: competition.quiz_set.title,
+        total_quiz_num: competition.quiz_set.quizzes.size,
         result: result.to_json,
         users_map: users_map.to_json
       }
@@ -17,11 +19,13 @@ class Service::CompetitionsController < ApplicationController
       options = quiz.options
       answer = current_user.answers.by_quiz(quiz).first
       render json: {
+        user_name: current_user.name,
         status: competition.status,
         title: quiz_set.title,
-        quiz: quiz.to_json(only: %i[number text])
+        total_quiz_num: quiz_set.quizzes.size,
+        quiz: quiz.to_json(only: %i[number text]),
         options: options.to_json(only: competition.answer? ? %i[number text is_correct_answer] : %i[number text]),
-        answer: answer.option.number
+        answer: answer&.option&.number
       }
     end
   end

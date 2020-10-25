@@ -8,7 +8,7 @@ class User < ActiveRecord::Base
   include DeviseTokenAuth::Concerns::User
 
   belongs_to :competition
-  has_many :answer
+  has_many :answers, dependent: :destroy
 
   validates :name, presence: true
 end
