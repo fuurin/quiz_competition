@@ -15,6 +15,7 @@ Rails.application.routes.draw do
       sessions: 'service/auth/sessions',
       registrations: 'service/auth/registrations'
     }
-    resources :competitions, param: :rid, only: :show    
+    resource :competitions, only: :show
+    resources :answers, only: %i[index create]
   end
 end

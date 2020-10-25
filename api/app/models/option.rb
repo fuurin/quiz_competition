@@ -6,4 +6,5 @@ class Option < ApplicationRecord
 
   default_scope { order(:number) }
   scope :by_quiz, ->(quiz) { where(quiz: quiz) }
+  scope :correct ->() { where(is_correct_answer: true) }
 end
