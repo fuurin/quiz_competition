@@ -1,6 +1,7 @@
 class Competition < ApplicationRecord
   belongs_to :quiz_set
   belongs_to :quiz
+  has_many :users
 
   enum status: { question: 0, answer: 1, result: 2 }
 

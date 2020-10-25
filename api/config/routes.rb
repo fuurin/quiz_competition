@@ -11,6 +11,10 @@ Rails.application.routes.draw do
   end
   
   scope :service, module: 'service' do
-    resources :competitions, param: :rid, only: :show
+    mount_devise_token_auth_for 'User', at: 'auth', controllers: {
+      sessions: 'service/auth/sessions',
+      registrations: 'service/auth/registrations'
+    }
+    resources :competitions, param: :rid, only: :show    
   end
 end
