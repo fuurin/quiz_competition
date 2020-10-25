@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2020_10_24_053822) do
+ActiveRecord::Schema.define(version: 2020_10_25_041802) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -40,6 +40,18 @@ ActiveRecord::Schema.define(version: 2020_10_24_053822) do
     t.index ["email"], name: "index_admins_on_email", unique: true
     t.index ["reset_password_token"], name: "index_admins_on_reset_password_token", unique: true
     t.index ["uid", "provider"], name: "index_admins_on_uid_and_provider", unique: true
+  end
+
+  create_table "competitions", force: :cascade do |t|
+    t.bigint "quiz_set_id", null: false
+    t.bigint "quiz_id", null: false
+    t.integer "status", default: 0, null: false
+    t.string "rid", null: false
+    t.datetime "created_at", precision: 6, null: false
+    t.datetime "updated_at", precision: 6, null: false
+    t.index ["quiz_id"], name: "index_competitions_on_quiz_id"
+    t.index ["quiz_set_id"], name: "index_competitions_on_quiz_set_id", unique: true
+    t.index ["rid"], name: "index_competitions_on_rid", unique: true
   end
 
   create_table "options", force: :cascade do |t|
@@ -75,6 +87,8 @@ ActiveRecord::Schema.define(version: 2020_10_24_053822) do
     t.index ["quiz_set_id"], name: "index_quizzes_on_quiz_set_id"
   end
 
+  add_foreign_key "competitions", "quiz_sets"
+  add_foreign_key "competitions", "quizzes"
   add_foreign_key "options", "quizzes"
   add_foreign_key "quiz_sets", "admins"
   add_foreign_key "quizzes", "quiz_sets"

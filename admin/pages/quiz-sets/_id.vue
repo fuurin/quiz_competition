@@ -125,8 +125,7 @@ function empty_quiz(number = 1) {
       url: "",
       name: "",
       type: ""
-    },
-    is_edited: true
+    }
   }
 }
 
