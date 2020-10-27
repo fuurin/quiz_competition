@@ -11,21 +11,27 @@ class Competition < ApplicationRecord
 
   before_validation :set_first_quiz, :set_rid, on: :create
 
-  def result_and_users_map
-    current_quiz_num = quiz.number
-    users_map = {}
-    result = quiz_set.quizzes.each_with_object([]) do |quiz, res|
-      if (question? ? quiz.number >= current_quiz_num : quiz.number > current_quiz_num)
-        break
-      end
-      correct_option_ids = quiz.options.correct.pluck(:id)
-      res.push(Answer.by_quiz(quiz).each_with_object({}) do |answer, judges|
-        user = answer.user
-        judges[user.id] = correct_option_ids.include?(answer.option.id) ? 1 : 0
-        users_map[user.id] ||= user.name
-      end)
+  def result
+    quizzes = quiz_set.quizzes.where("number <#{'=' unless question?} #{quiz.number}")
+    quiz_map = quizzes.each_with_object({}).with_index { |(q, m), i| m[q.id] = i }
+    user_map = users.each_with_object({}).with_index { |(u, m), i| m[u.id] = i }
+    result_plane = Array.new(user_map.size).map{ Array.new(quiz_map.size, 0) }
+    answers.includes(:option).each do |answer|
+      next unless answer.option.is_correct_answer
+      result_plane[user_map[answer.user_id]][quiz_map[answer.quiz_id]] = 1
     end
-    [result, users_map]
+    result = users.map do |user|
+      {
+        name: user.name,
+        email: user.email,
+        correct_num: result_plane[user_map[user.id]].sum,
+      }.merge(
+        result_plane[user_map[user.id]].each_with_object({}).with_index do |(r, m), i|
+          m["q#{i+1}".to_sym] = r.zero? ? '×' : '○'
+        end
+      )
+    end.sort { |a, b| a[:correct_num] <=> b[:correct_num] }
+    result.each_with_index { |r, i| r[:rank] = i + 1}
   end
 
   private

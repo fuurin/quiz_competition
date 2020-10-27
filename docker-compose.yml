@@ -34,6 +34,7 @@ services:
         WORKDIR: $WORKDIR
         CONTAINER_PORT: $CONTAINER_PORT
         API_URL: "http://localhost:$API_PORT/admin"
+        SERVICE_URL: "http://localhost:$SERVICE_PORT"
     command: sh -c 'yarn && yarn run dev'
     volumes:
       - ./admin:/$WORKDIR

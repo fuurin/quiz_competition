@@ -11,4 +11,5 @@ class User < ActiveRecord::Base
   has_many :answers, dependent: :destroy
 
   validates :name, presence: true
+  validates :email, presence: true, uniqueness: { scope: :competition }
 end

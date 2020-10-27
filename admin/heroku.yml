@@ -4,5 +4,6 @@ build:
   config:
     WORKDIR: app
     API_URL: https://quiz-competition-api.herokuapp.com/admin
+    SERVICE_URL: https://quiz-competition-service.herokuapp.com
 run:
   web: yarn run start

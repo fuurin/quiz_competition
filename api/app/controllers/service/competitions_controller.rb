@@ -4,14 +4,13 @@ class Service::CompetitionsController < ApplicationController
   def show
     competition = current_user.competition
     if competition.result?
-      result, users_map = competition.result_and_users_map
       render json: {
         user_name: current_user.name,
+        user_email: current_user.email,
         status: competition.status,
         title: competition.quiz_set.title,
         total_quiz_num: competition.quiz_set.quizzes.size,
-        result: result.to_json,
-        users_map: users_map.to_json
+        result: competition.result.to_json
       }
     else
       quiz_set = competition.quiz_set
@@ -24,8 +23,8 @@ class Service::CompetitionsController < ApplicationController
         title: quiz_set.title,
         total_quiz_num: quiz_set.quizzes.size,
         quiz: quiz.to_json(only: %i[number text]),
-        options: options.to_json(only: competition.answer? ? %i[number text is_correct_answer] : %i[number text]),
-        answer: answer&.option&.number
+        options: options.to_json(only: competition.answer? ? %i[id number text is_correct_answer] : %i[id number text]),
+        answer: answer&.option&.id
       }
     end
   end

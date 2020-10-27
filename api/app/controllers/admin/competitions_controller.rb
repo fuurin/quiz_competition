@@ -4,7 +4,7 @@ class Admin::CompetitionsController < ApplicationController
   before_action :set_competition, except: :create
 
   def show
-    render json: quiz_info(@competition.quiz)
+    render json: @competition.result? ? result_info : quiz_info(@competition.quiz)
   end
 
   def create
@@ -22,6 +22,7 @@ class Admin::CompetitionsController < ApplicationController
     when :answer
       (next_quiz = @competition.quiz.next_quiz) ? to_question(next_quiz) : to_result
     when :result
+      @competition.answers.destroy_all
       to_question(@competition.quiz_set.quizzes.first)
     else
       render json: { error: 'invalid competition status' }, status: 422
@@ -64,7 +65,8 @@ class Admin::CompetitionsController < ApplicationController
     {
       status: @competition.status, 
       title: @competition.quiz_set.title,
-      total_quiz_num: @competition.quiz_set.quizzes.size
+      total_quiz_num: @competition.quiz_set.quizzes.size,
+      result: @competition.result.to_json
     }
   end
 

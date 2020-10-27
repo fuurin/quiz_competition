@@ -15,6 +15,9 @@ export default {
       { rel: 'icon', type: 'image/x-icon', href: '/favicon.ico' }
     ]
   },
+  env: {
+    service_url: process.env.SERVICE_URL || 'localhost:8000'
+  },
 
   // Global CSS (https://go.nuxtjs.dev/config-css)
   css: [
@@ -41,7 +44,8 @@ export default {
   modules: [
     // https://go.nuxtjs.dev/axios
     '@nuxtjs/axios',
-    'cookie-universal-nuxt'
+    'cookie-universal-nuxt',
+    'nuxt-clipboard2'
   ],
 
   // Axios module configuration (https://go.nuxtjs.dev/config-axios)
