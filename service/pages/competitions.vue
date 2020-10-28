@@ -73,7 +73,7 @@
               </thead>
             </template>
             <template v-slot:item="{ item }">
-              <tr :class="rank_class(item.rank)">
+              <tr :class="row_color(item)">
                 <td v-for="(header, i) in result_headers" :key="i" class="text-start text-no-wrap">
                   {{ item[header.value] }}
                 </td>
@@ -222,8 +222,9 @@ export default {
       this.$store.dispatch('auth/sign_out')
       this.sign_out_dialog = false
     },
-    rank_class(rank) {
-      switch (rank) {
+    row_color(item) {
+      if (this.$store.state.auth.data.email === item.email) return 'self-row'
+      switch (item.rank) {
         case 1: return 'rank-first'
         case 2: return 'rank-second'
         case 3: return 'rank-third'
@@ -262,6 +263,10 @@ export default {
 
   .correct-answer {
     background-color: chartreuse;
+  }
+
+  .self-row {
+    background-color: chartreuse
   }
 
   .rank-first {

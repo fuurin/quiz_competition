@@ -69,7 +69,7 @@
               </thead>
             </template>
             <template v-slot:item="{ item }">
-              <tr :class="rank_class(item.rank)">
+              <tr :class="row_color(item)">
                 <td v-for="(header, i) in result_headers" :key="i" class="text-start text-no-wrap">
                   {{ item[header.value] }}
                 </td>
@@ -198,8 +198,8 @@ export default {
           this.close_dialog = false
         })
     },
-    rank_class(rank) {
-      switch (rank) {
+    row_color(item) {
+      switch (item.rank) {
         case 1: return 'rank-first'
         case 2: return 'rank-second'
         case 3: return 'rank-third'

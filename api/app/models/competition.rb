@@ -12,26 +12,47 @@ class Competition < ApplicationRecord
   before_validation :set_first_quiz, :set_rid, on: :create
 
   def result
+    # クイズの途中であれば、現在開示しているところまでの結果発表を行う
     quizzes = quiz_set.quizzes.where("number <#{'=' unless question?} #{quiz.number}")
+
+    # 全出題クイズを取得
     quiz_map = quizzes.each_with_object({}).with_index { |(q, m), i| m[q.id] = i }
+
+    # 全参加ユーザを取得
     user_map = users.each_with_object({}).with_index { |(u, m), i| m[u.id] = i }
-    result_plane = Array.new(user_map.size).map{ Array.new(quiz_map.size, 0) }
+    
+    # ユーザ × 問題 の二次元テーブルを作り、正解していれば1, 不正解・答えなしなら0を入れる
+    result_table = Array.new(user_map.size).map{ Array.new(quiz_map.size, 0) }
     answers.includes(:option).each do |answer|
       next unless answer.option.is_correct_answer
-      result_plane[user_map[answer.user_id]][quiz_map[answer.quiz_id]] = 1
+      result_table[user_map[answer.user_id]][quiz_map[answer.quiz_id]] = 1
     end
+
+    # name, email, 正解数, 正誤履歴からなるオブジェクトを正解数が大きい順に取得
     result = users.map do |user|
       {
         name: user.name,
         email: user.email,
-        correct_num: result_plane[user_map[user.id]].sum,
+        correct_num: result_table[user_map[user.id]].sum,
       }.merge(
-        result_plane[user_map[user.id]].each_with_object({}).with_index do |(r, m), i|
+        result_table[user_map[user.id]].each_with_object({}).with_index do |(r, m), i|
           m["q#{i+1}".to_sym] = r.zero? ? '×' : '○'
         end
       )
     end.sort { |a, b| b[:correct_num] <=> a[:correct_num] }
-    result.each_with_index { |r, i| r[:rank] = i + 1}
+
+    # タイを考慮した順位付けを行う
+    rank = 1
+    prev_correct_num = result.first[:correct_num]
+    result.each do |r|
+      if prev_correct_num > r[:correct_num]
+        rank += 1
+      end
+      prev_correct_num = r[:correct_num]
+      r[:rank] = rank
+    end
+
+    result
   end
 
   private
