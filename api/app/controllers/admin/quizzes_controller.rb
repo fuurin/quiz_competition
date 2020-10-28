@@ -2,7 +2,6 @@ class Admin::QuizzesController < ApplicationController
   def create
     quiz_set = current_admin.quiz_sets.find_by(id: params['quiz_set']['id'])
     unless quiz_set
-      # @TODO QuizSetがなかったことを伝えるメッセージを返したい
       render json: { error: 'quiz set not found'}, status: 422
     end
 
@@ -14,8 +13,12 @@ class Admin::QuizzesController < ApplicationController
           bulk[:quizzes] << (quiz = Quiz.new(
             quiz_set: quiz_set,
             number: quiz_hash['number'],
-            text: quiz_hash['text']
+            text: quiz_hash['text'],
+            image: quiz_hash['image']['url'],
+            answer_image: quiz_hash['answer_image']['url']
           ))
+
+          puts quiz
 
           has_answer = false
           quiz_hash['options'].each do |option_hash|

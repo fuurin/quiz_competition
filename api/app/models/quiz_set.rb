@@ -16,6 +16,8 @@ class QuizSet < ApplicationRecord
     quizzes.map do |quiz|
       att = quiz.attributes
       att[:options] = options[quiz.id]
+      att[:image] = { url: quiz.image }
+      att[:answer_image] = { url: quiz.answer_image }
       att
     end
   end
