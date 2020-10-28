@@ -30,7 +30,7 @@ class Competition < ApplicationRecord
           m["q#{i+1}".to_sym] = r.zero? ? '×' : '○'
         end
       )
-    end.sort { |a, b| a[:correct_num] <=> b[:correct_num] }
+    end.sort { |a, b| b[:correct_num] <=> a[:correct_num] }
     result.each_with_index { |r, i| r[:rank] = i + 1}
   end
 
