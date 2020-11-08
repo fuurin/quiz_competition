@@ -1,6 +1,4 @@
-class Service::AnswersController < ApplicationController
-  before_action :authenticate_user!
-
+class Service::AnswersController < Service::BaseController
   def index
     competition = current_user.competition
     render json: {

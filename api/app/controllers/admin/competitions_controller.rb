@@ -1,5 +1,4 @@
-class Admin::CompetitionsController < ApplicationController
-  before_action :authenticate_admin!
+class Admin::CompetitionsController < Admin::BaseController
   before_action :set_quiz_set, only: :create
   before_action :set_competition, except: :create
 

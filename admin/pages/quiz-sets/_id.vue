@@ -58,10 +58,10 @@
                 small-chips
                 outlined
                 prepend-icon="mdi-file-image"
-                @change="preview_image($event, quiz.image)"
+                @change="change_image($event, quiz)"
               ></v-file-input>
-              <v-img :src="quiz.image.url" 
-                    v-if="quiz.image.url"
+              <v-img :src="quiz.image" 
+                    v-if="quiz.image"
                     max-width="360" max-height="640" contain
                     class="ml-8 mb-8"></v-img>
               <v-file-input
@@ -70,10 +70,10 @@
                 small-chips
                 outlined
                 prepend-icon="mdi-file-image-outline"
-                @change="preview_image($event, quiz.answer_image)"
+                @change="change_image($event, quiz, for_answer=true)"
               ></v-file-input>
-              <v-img :src="quiz.answer_image.url" 
-                    v-if="quiz.answer_image.url"
+              <v-img :src="quiz.answer_image" 
+                    v-if="quiz.answer_image"
                     max-width="360" max-height="640" contain
                     class="ml-8 mb-8"></v-img>
             </v-container>
@@ -116,16 +116,8 @@ function empty_quiz(number = 1) {
       option.is_correct_answer = (i % 2 == 0)
       return option
     }),
-    image: {
-      url: "",
-      name: "",
-      type: ""
-    },
-    answer_image: {
-      url: "",
-      name: "",
-      type: ""
-    }
+    image: "",
+    answer_image: ""
   }
 }
 
@@ -139,7 +131,7 @@ export default {
   },
   data () {
     return {
-      quiz_set: { title: "" },
+      quiz_set: { id: 0, title: "" },
       quizzes: []
     }
   },
@@ -159,7 +151,7 @@ export default {
           })
           return quiz
         })
-        if(this.quizzes.length == 0) this.add_quiz()
+        if(this.quizzes.length === 0) this.add_quiz()
       })
       .catch((error) => {
         if (typeof error.response !== 'undefined' && error.response.status === 404) {
@@ -200,10 +192,24 @@ export default {
         quiz.options[x].number--
       }
     },
-    preview_image(file, image) {
-      image.url = file ? window.URL.createObjectURL(file) : ""
-      image.name = file ? file.name : ""
-      image.type = file ? file.type : ""
+    async change_image(file, quiz, for_answer = false) {
+      // @TODO なんか移動させたときinputの名前だけそのまま残る
+      // @TODO 画像選択キャンセルするとエラー
+      this.$axios.get('/image/upload_url', { params: {
+        file_name: file.name,
+        file_type: file.type,
+        file_size: file.size,
+        quiz_set_id: this.quiz_set.id,
+        previous_file_url: for_answer ? quiz.answer_image : quiz.image
+      } } )
+        .then(async (res) => { 
+          await this.$axios.put(res.data.upload_url, file)
+            .catch((error) => { this.$store.commit('snackbar/set', error.message) })
+          await this.$axios.put('/image/temporalize', { key: res.data.key })
+            .catch((error) => { this.$store.commit('snackbar/set', error.message) })
+          quiz[for_answer ? 'answer_image' : 'image'] = res.data.url
+        })
+        .catch((error) => { this.$store.commit('snackbar/set', error.message) })
     },
     async save() {
       this.$store.commit('snackbar/set', '保存中...')

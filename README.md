@@ -3,8 +3,10 @@
 [開発について](https://scrapbox.io/programming-technology/Nuxt_+_Vuetify_+_Rails_API_mode%E3%81%A7%E3%82%AF%E3%82%A4%E3%82%BA%E5%A4%A7%E4%BC%9AWeb%E3%82%A2%E3%83%97%E3%83%AA%E3%82%92%E4%BD%9C%E3%82%8B)
 
 ## ローカルでの起動
-- .env_sampleの値を元に.envを作成し、埋める
-- master.keyをapi/config/master.keyに配置
+dockerを導入していること
+
+- .env_sampleをコピーして.envという名前で保存
+- master.keyをプロジェクト管理者から受け取りapi/config/master.keyに配置
 
 ``` bash
 make init
@@ -32,7 +34,7 @@ API, Admin, Serviceの3つのものがデプロイ対象。
 ``` bash
 make deploy_all
 ```
-で全てのデプロイを実行する。
+で、**DBのリセットを含めた**全てのデプロイを実行する。
 
 ### API
 `heroku create app`直後ならば、上記「開発について」を参照しながらherokuでの環境変数の設定を先に行うこと。

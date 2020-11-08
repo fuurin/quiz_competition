@@ -3,11 +3,12 @@ credentials = Aws::Credentials.new(
   Rails.application.credentials.aws[:secret_access_key]
 )
 
-s3_resource = Aws::S3::Resource.new(
-  region: Rails.application.credentials.aws[:s3][:region],
-  credentials: credentials
+S3_CLIENT = Aws::S3::Client.new(
+  credentials: credentials,
+  region: Rails.application.credentials.aws[:s3][:region]
 )
 
-S3_BUCKET = s3_resource.bucket(
-  Rails.application.credentials.aws[:s3][:bucket][Rails.env.production? ? :prod : :dev]
-)
+S3_BUCKET = Aws::S3::Resource.new(
+  credentials: credentials,
+  region: Rails.application.credentials.aws[:s3][:region]
+).bucket(Rails.application.credentials.aws[:s3][:bucket])

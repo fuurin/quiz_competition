@@ -1,5 +1,4 @@
-class Admin::QuizSetsController < ApplicationController
-  before_action :authenticate_admin!
+class Admin::QuizSetsController < Admin::BaseController
   before_action :set_quiz_set, only: :show
 
   def index

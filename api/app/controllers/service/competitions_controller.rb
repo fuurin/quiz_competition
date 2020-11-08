@@ -1,6 +1,4 @@
-class Service::CompetitionsController < ApplicationController
-  before_action :authenticate_user!
-  
+class Service::CompetitionsController < Service::BaseController
   def show
     competition = current_user.competition
     if competition.result?
