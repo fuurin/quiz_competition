@@ -55,7 +55,6 @@
               <v-file-input
                 accept="image/*"
                 label="問題用画像"
-                small-chips
                 outlined
                 prepend-icon="mdi-file-image"
                 @change="change_image($event, quiz)"
@@ -67,7 +66,6 @@
               <v-file-input
                 accept="image/*"
                 label="正解用画像"
-                small-chips
                 outlined
                 prepend-icon="mdi-file-image-outline"
                 @change="change_image($event, quiz, for_answer=true)"
@@ -194,7 +192,11 @@ export default {
     },
     async change_image(file, quiz, for_answer = false) {
       // @TODO なんか移動させたときinputの名前だけそのまま残る
-      // @TODO 画像選択キャンセルするとエラー
+      // 表示名もAWSのURLにしたい
+      if (typeof file === 'undefined') {
+        quiz[for_answer ? 'answer_image' : 'image'] = ''
+        return
+      }
       this.$axios.get('/image/upload_url', { params: {
         file_name: file.name,
         file_type: file.type,
