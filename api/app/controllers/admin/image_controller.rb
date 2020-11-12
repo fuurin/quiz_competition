@@ -18,7 +18,7 @@ class Admin::ImageController < Admin::BaseController
     render json: { 
       upload_url: S3_BUCKET.object(key).presigned_url(:put, options),
       key: key,
-      url: URI.join(Rails.application.credentials.aws[:s3][:bucket_base_url], key)
+      url: Rails.application.credentials.aws[:s3][:bucket_base_url] + key
     }
   end
 

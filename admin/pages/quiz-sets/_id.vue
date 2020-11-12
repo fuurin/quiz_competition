@@ -57,6 +57,7 @@
                 label="問題用画像"
                 outlined
                 prepend-icon="mdi-file-image"
+                :value="quiz.image_file"
                 @change="change_image($event, quiz)"
               ></v-file-input>
               <v-img :src="quiz.image" 
@@ -68,6 +69,7 @@
                 label="正解用画像"
                 outlined
                 prepend-icon="mdi-file-image-outline"
+                :value="quiz.answer_image_file"
                 @change="change_image($event, quiz, for_answer=true)"
               ></v-file-input>
               <v-img :src="quiz.answer_image" 
@@ -115,7 +117,9 @@ function empty_quiz(number = 1) {
       return option
     }),
     image: "",
-    answer_image: ""
+    image_file: null,
+    answer_image: "",
+    answer_image_file: null
   }
 }
 
@@ -191,8 +195,6 @@ export default {
       }
     },
     async change_image(file, quiz, for_answer = false) {
-      // @TODO なんか移動させたときinputの名前だけそのまま残る
-      // 表示名もAWSのURLにしたい
       if (typeof file === 'undefined') {
         quiz[for_answer ? 'answer_image' : 'image'] = ''
         return
@@ -210,6 +212,7 @@ export default {
           await this.$axios.put('/image/temporalize', { key: res.data.key })
             .catch((error) => { this.$store.commit('snackbar/set', error.message) })
           quiz[for_answer ? 'answer_image' : 'image'] = res.data.url
+          quiz[for_answer ? 'answer_image_file' : 'image_file'] = file
         })
         .catch((error) => { this.$store.commit('snackbar/set', error.message) })
     },
@@ -217,6 +220,7 @@ export default {
       this.$store.commit('snackbar/set', '保存中...')
       return await this.$axios.post('/quizzes', {
         quiz_set: this.quiz_set,
+        // @TODO image file送りたくない
         quizzes: this.quizzes
       }).then(() => {
         this.$store.commit('snackbar/set', '保存しました。')
