@@ -92,8 +92,8 @@ ActiveRecord::Schema.define(version: 2020_10_25_180152) do
     t.bigint "quiz_set_id", null: false
     t.integer "number", null: false
     t.string "text", limit: 256, null: false
-    t.string "image"
-    t.string "answer_image"
+    t.string "image_key"
+    t.string "answer_image_key"
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
     t.index ["number", "quiz_set_id"], name: "index_quizzes_on_number_and_quiz_set_id", unique: true

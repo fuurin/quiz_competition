@@ -43,19 +43,26 @@ class Admin::ImageController < Admin::BaseController
   private
 
   def check_file_size
-    return if params[:file_size].present? && params[:file_size].to_i <= Settings.controllers.image_upload.max_file_size
+    if params[:file_size].present? && params[:file_size].to_i <= Settings.controllers.image_upload.max_file_size
+      return
+    end
 
     render json: { message: 'maximum file size is 1MB' }, status: 400
   end
 
   def check_file_type
-    return if Settings.controllers.image_upload.allowed_file_types.include?(params[:file_type])
+    if Settings.controllers.image_upload.allowed_file_types.include?(params[:file_type])
+      return
+    end
 
-    render json: { message: "allowed file types are png, jpg, and jpeg. But #{params[:file_type]} passed." }, status: 400
+    allowed_types = Settings.controllers.image_upload.allowed_file_types.join(', ')
+    render json: { message: "allowed file types are #{allowed_types}. But #{params[:file_type]} passed." }, status: 400
   end
 
   def delete_previous_image
-    return if params[:previous_file_url].blank?
+    if params[:previous_file_url].blank?
+      return
+    end
 
     key = URI.parse(params[:previous_file_url]).path.slice(1..)
 

@@ -5,14 +5,16 @@ class Admin::QuizzesController < Admin::BaseController
     ActiveRecord::Base.transaction do
       quiz_set.quizzes.destroy_all
 
-      bulk = params['quizzes'].each_with_object({quizzes: [], options: []}) do |quiz_hash, bulk|
+      bulk = params['quizzes'].each_with_object({quizzes: [], options: [], image_keys: []}) do |quiz_hash, bulk|
         bulk[:quizzes] << (quiz = Quiz.new(
           quiz_set: quiz_set,
           number: quiz_hash['number'],
           text: quiz_hash['text'],
-          image: quiz_hash['image'],
-          answer_image: quiz_hash['answer_image']
+          image_key: image_url_to_key(quiz_hash['image_url']),
+          answer_image_key: image_url_to_key(quiz_hash['answer_image_url'])
         ))
+
+        bulk[:image_keys] << quiz.image_key << quiz.answer_image_key
 
         has_answer = false
         quiz_hash['options'].each do |option_hash|
@@ -31,6 +33,7 @@ class Admin::QuizzesController < Admin::BaseController
       end
       Quiz.import! bulk[:quizzes]
       Option.import! bulk[:options]
+      perpetuate_images bulk[:image_keys]
     end
   rescue StandardError => e
     puts e
@@ -43,6 +46,20 @@ class Admin::QuizzesController < Admin::BaseController
     unless @quiz_set ||= current_admin.quiz_sets.find_by(id: params['quiz_set_id'])
       render json: { error: 'quiz set not found'}, status: 404
     end
+  end
+
+  def image_url_to_key(url)
+    url.gsub(Rails.application.credentials.aws[:s3][:bucket_base_url], '')
+  end
+
+  def perpetuate_images(image_keys)
+    image_keys.each do |key|
+      S3_CLIENT.put_object_tagging({
+        bucket: Rails.application.credentials.aws[:s3][:bucket],
+        key: key,
+        tagging: { tag_set: [{ key: 'tmp', value: 'false' }] }
+      })
+      end
   end
 end
 

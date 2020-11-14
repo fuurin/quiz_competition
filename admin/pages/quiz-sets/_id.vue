@@ -123,6 +123,12 @@ function empty_quiz(number = 1) {
   }
 }
 
+function image_key_to_empty_file(key) {
+  const file_name = key.split("/").pop().split("_").splice(2).join("_")
+  const file_type = `image/${file_name.split(".").pop()}`
+  return new File([""], file_name, { type: file_type })
+}
+
 export default {
   head() {
     return { title: 'クイズ集の編集' }
@@ -153,11 +159,11 @@ export default {
           })
           if (typeof(q.image_key) !== 'undefined' && q.image_key !== '') {
             quiz.image_url = res.data.image_base_url + q.image_key
-            quiz.image_file = new File('', q.image_key.split('/').pop())
+            quiz.image_file = image_key_to_empty_file(q.image_key)
           }
           if (typeof(q.answer_image) !== 'undefined' && q.answer_image !== '') {
             quiz.answer_image_url = res.data.image_base_url + q.answer_image_key
-            quiz.answer_image_file = new File('', q.answer_image_key.split('/').pop())
+            quiz.answer_image_file = image_key_to_empty_file(q.answer_image_key)
           }
           return quiz
         })

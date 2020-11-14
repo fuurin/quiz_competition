@@ -6,7 +6,11 @@ class Admin::QuizSetsController < Admin::BaseController
   end
 
   def show
-    render json: { quiz_set: @quiz_set, quizzes: @quiz_set&.quizzes_by_attributes }
+    render json: {
+      quiz_set: @quiz_set,
+      quizzes: @quiz_set.quizzes_by_attributes,
+      image_base_url: Rails.application.credentials.aws[:s3][:bucket_base_url]
+    }
   end
 
   def create
