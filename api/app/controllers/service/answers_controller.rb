@@ -1,28 +1,34 @@
 class Service::AnswersController < Service::BaseController
+  before_action :set_competition
+
   def index
-    competition = current_user.competition
     render json: {
-      status: competition.status,
-      title: competition.quiz_set.title,
-      result: competition.result.to_json
+      status: @competition.status,
+      title: @competition.quiz_set.title,
+      result: @competition.result.to_json
     }
   end
 
   def create
-    competition = current_user.competition
-    unless competition.question?
+    unless @competition.question?
       render json: { error: 'send answer in question phase'}, status: 405
       return
     end
 
-    quiz = competition.quiz
+    quiz = @competition.quiz
     option = Option.find_by(id: params[:option_id])
-    if (answer = Answer.by_user(current_user).by_quiz(quiz).first)
+    if (answer = current_user.answers.by_quiz(quiz).first)
       answer.update!(option: option)
       render json: {}, status: 200
     else
-      Answer.create!(user: current_user, quiz: quiz, option: option)
+      current_user.answers.create!(quiz: quiz, option: option)
       render json: {}, status: 201
     end
+  end
+
+  private
+
+  def set_competition
+    @competition = current_user.competition
   end
 end

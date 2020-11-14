@@ -87,10 +87,10 @@
       </v-btn>
     </v-container>
     <v-container>
-      <v-btn @click="save">
+      <v-btn @click="save" :disabled='is_saving'>
         保存
       </v-btn>
-      <v-btn @click="save_and_back" class="ml-4">
+      <v-btn @click="save_and_back" :disabled='is_saving' class="ml-4">
         保存して戻る
       </v-btn>
     </v-container>
@@ -117,8 +117,8 @@ function empty_quiz(number = 1) {
       return option
     }),
     image_url: "",
-    image_file: null,
     answer_image_url: "",
+    image_file: null,
     answer_image_file: null
   }
 }
@@ -140,7 +140,8 @@ export default {
   data () {
     return {
       quiz_set: { id: 0, title: "" },
-      quizzes: []
+      quizzes: [],
+      is_saving: false
     }
   },
   created() {
@@ -157,11 +158,11 @@ export default {
             option.is_correct_answer = o.is_correct_answer
             return option
           })
-          if (typeof(q.image_key) !== 'undefined' && q.image_key !== '') {
+          if (q.image_key !== null && q.image_key !== '') {
             quiz.image_url = res.data.image_base_url + q.image_key
             quiz.image_file = image_key_to_empty_file(q.image_key)
           }
-          if (typeof(q.answer_image) !== 'undefined' && q.answer_image !== '') {
+          if (q.answer_image_key !== null && q.answer_image_key !== '') {
             quiz.answer_image_url = res.data.image_base_url + q.answer_image_key
             quiz.answer_image_file = image_key_to_empty_file(q.answer_image_key)
           }
@@ -210,7 +211,8 @@ export default {
     },
     async change_image(file, quiz, for_answer = false) {
       if (typeof file === 'undefined') {
-        quiz[for_answer ? 'answer_image' : 'image'] = ''
+        quiz[for_answer ? 'answer_image_url' : 'image_url'] = ''
+        quiz[for_answer ? 'answer_image_file' : 'image_file'] = null
         return
       }
       this.$axios.get('/image/upload_url', { params: {
@@ -231,6 +233,7 @@ export default {
         .catch((error) => { this.$store.commit('snackbar/set', error.message) })
     },
     async save() {
+      this.is_saving = true
       this.$store.commit('snackbar/set', '保存中...')
       return await this.$axios.post('/quizzes', {
         quiz_set_id: this.quiz_set.id,
@@ -249,7 +252,7 @@ export default {
       }).catch(() => {
         this.$store.commit('snackbar/set', '保存に失敗しました。')
         return false
-      })
+      }).finally(() => { this.is_saving = false })
     },
     async save_and_back() {
       if (await this.save() === true) {

@@ -23,6 +23,8 @@ class Service::CompetitionsController < Service::BaseController
         quiz: quiz.to_json(only: %i[number text]),
         options: options.to_json(only: competition.answer? ? %i[id number text is_correct_answer] : %i[id number text]),
         answer: answer&.option&.id
+        image_url: Rails.application.credentials.aws[:s3][:bucket_base_url] +
+                   (competition.quiz? ? quiz.image_key : quiz.answer_image_key)
       }
     end
   end

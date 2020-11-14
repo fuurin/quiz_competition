@@ -4,8 +4,8 @@ class CreateQuizzes < ActiveRecord::Migration[6.0]
       t.references :quiz_set, null: false, foreign_key: true
       t.integer :number, null: false
       t.string :text, null: false, limit: 256
-      t.string :image_key
-      t.string :answer_image_key
+      t.string :image
+      t.string :answer_image
 
       t.timestamps
     end
