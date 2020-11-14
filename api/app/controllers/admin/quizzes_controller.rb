@@ -40,7 +40,7 @@ class Admin::QuizzesController < Admin::BaseController
   private
 
   def set_quiz_set
-    unless @quiz_set ||= current_admin.quiz_sets.find_by(id: params['quiz_set']['id'])
+    unless @quiz_set ||= current_admin.quiz_sets.find_by(id: params['quiz_set_id'])
       render json: { error: 'quiz set not found'}, status: 404
     end
   end

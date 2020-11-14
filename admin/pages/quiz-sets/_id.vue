@@ -60,8 +60,8 @@
                 :value="quiz.image_file"
                 @change="change_image($event, quiz)"
               ></v-file-input>
-              <v-img :src="quiz.image" 
-                    v-if="quiz.image"
+              <v-img :src="quiz.image_url" 
+                    v-if="quiz.image_url"
                     max-width="360" max-height="640" contain
                     class="ml-8 mb-8"></v-img>
               <v-file-input
@@ -72,8 +72,8 @@
                 :value="quiz.answer_image_file"
                 @change="change_image($event, quiz, for_answer=true)"
               ></v-file-input>
-              <v-img :src="quiz.answer_image" 
-                    v-if="quiz.answer_image"
+              <v-img :src="quiz.answer_image_url" 
+                    v-if="quiz.answer_image_url"
                     max-width="360" max-height="640" contain
                     class="ml-8 mb-8"></v-img>
             </v-container>
@@ -116,9 +116,9 @@ function empty_quiz(number = 1) {
       option.is_correct_answer = (i % 2 == 0)
       return option
     }),
-    image: "",
+    image_url: "",
     image_file: null,
-    answer_image: "",
+    answer_image_url: "",
     answer_image_file: null
   }
 }
@@ -151,6 +151,14 @@ export default {
             option.is_correct_answer = o.is_correct_answer
             return option
           })
+          if (typeof(q.image_key) !== 'undefined' && q.image_key !== '') {
+            quiz.image_url = res.data.image_base_url + q.image_key
+            quiz.image_file = new File('', q.image_key.split('/').pop())
+          }
+          if (typeof(q.answer_image) !== 'undefined' && q.answer_image !== '') {
+            quiz.answer_image_url = res.data.image_base_url + q.answer_image_key
+            quiz.answer_image_file = new File('', q.answer_image_key.split('/').pop())
+          }
           return quiz
         })
         if(this.quizzes.length === 0) this.add_quiz()
@@ -204,14 +212,14 @@ export default {
         file_type: file.type,
         file_size: file.size,
         quiz_set_id: this.quiz_set.id,
-        previous_file_url: for_answer ? quiz.answer_image : quiz.image
+        previous_file_url: for_answer ? quiz.answer_image_url : quiz.image_url
       } } )
         .then(async (res) => { 
           await this.$axios.put(res.data.upload_url, file)
             .catch((error) => { this.$store.commit('snackbar/set', error.message) })
           await this.$axios.put('/image/temporalize', { key: res.data.key })
             .catch((error) => { this.$store.commit('snackbar/set', error.message) })
-          quiz[for_answer ? 'answer_image' : 'image'] = res.data.url
+          quiz[for_answer ? 'answer_image_url' : 'image_url'] = res.data.url
           quiz[for_answer ? 'answer_image_file' : 'image_file'] = file
         })
         .catch((error) => { this.$store.commit('snackbar/set', error.message) })
@@ -219,9 +227,16 @@ export default {
     async save() {
       this.$store.commit('snackbar/set', '保存中...')
       return await this.$axios.post('/quizzes', {
-        quiz_set: this.quiz_set,
-        // @TODO image file送りたくない
-        quizzes: this.quizzes
+        quiz_set_id: this.quiz_set.id,
+        quizzes: this.quizzes.map((quiz) => {
+          return {
+            number: quiz.number,
+            text: quiz.text,
+            options: quiz.options,
+            image_url: quiz.image_url,
+            answer_image_url: quiz.answer_image_url,
+          }
+        })
       }).then(() => {
         this.$store.commit('snackbar/set', '保存しました。')
         return true
