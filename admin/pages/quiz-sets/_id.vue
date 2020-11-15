@@ -54,7 +54,7 @@
             <v-container>
               <v-file-input
                 accept="image/*"
-                label="問題用画像"
+                label="問題用画像 (1MBまで)"
                 outlined
                 prepend-icon="mdi-file-image"
                 :value="quiz.image_file"
@@ -62,11 +62,11 @@
               ></v-file-input>
               <v-img :src="quiz.image_url" 
                     v-if="quiz.image_url"
-                    max-width="360" max-height="640" contain
+                    max-width="640" max-height="360" contain
                     class="ml-8 mb-8"></v-img>
               <v-file-input
                 accept="image/*"
-                label="正解用画像"
+                label="正解用画像 (1MBまで)"
                 outlined
                 prepend-icon="mdi-file-image-outline"
                 :value="quiz.answer_image_file"
@@ -74,7 +74,7 @@
               ></v-file-input>
               <v-img :src="quiz.answer_image_url" 
                     v-if="quiz.answer_image_url"
-                    max-width="360" max-height="640" contain
+                    max-width="640" max-height="360" contain
                     class="ml-8 mb-8"></v-img>
             </v-container>
           </v-container>
@@ -210,11 +210,13 @@ export default {
       }
     },
     async change_image(file, quiz, for_answer = false) {
+      console.log(file)
       if (typeof file === 'undefined') {
         quiz[for_answer ? 'answer_image_url' : 'image_url'] = ''
         quiz[for_answer ? 'answer_image_file' : 'image_file'] = null
         return
       }
+
       this.$axios.get('/image/upload_url', { params: {
         file_name: file.name,
         file_type: file.type,
@@ -224,13 +226,24 @@ export default {
       } } )
         .then(async (res) => { 
           await this.$axios.put(res.data.upload_url, file)
-            .catch((error) => { this.$store.commit('snackbar/set', error.message) })
+            .catch((error) => {
+              this.$store.commit('snackbar/set', error.response.data.message)
+              quiz[for_answer ? 'answer_image_url' : 'image_url'] = ''
+              quiz[for_answer ? 'answer_image_file' : 'image_file'] = null
+            })
           await this.$axios.put('/image/temporalize', { key: res.data.key })
-            .catch((error) => { this.$store.commit('snackbar/set', error.message) })
+            .catch((error) => {
+              this.$store.commit('snackbar/set', error.response.data.message)
+              quiz[for_answer ? 'answer_image_url' : 'image_url'] = ''
+              quiz[for_answer ? 'answer_image_file' : 'image_file'] = null
+            })
           quiz[for_answer ? 'answer_image_url' : 'image_url'] = res.data.url
           quiz[for_answer ? 'answer_image_file' : 'image_file'] = file
+        }).catch((error) => {
+          this.$store.commit('snackbar/set', error.response.data.message)
+          quiz[for_answer ? 'answer_image_url' : 'image_url'] = ''
+          quiz[for_answer ? 'answer_image_file' : 'image_file'] = null
         })
-        .catch((error) => { this.$store.commit('snackbar/set', error.message) })
     },
     async save() {
       this.is_saving = true

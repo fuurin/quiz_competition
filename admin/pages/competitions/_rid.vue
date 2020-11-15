@@ -15,6 +15,9 @@
         <v-sheet rounded elevation="2" class="mx-auto pa-4">
           <h3>問題文</h3>
           <p>{{ quiz.text }}</p>
+          <v-img :src="image_url" v-if="image_url" class="mb-2"
+            max-width="640" max-height="360" contain>
+          </v-img>
         </v-sheet>
       </v-container>
       <v-container>
@@ -136,6 +139,7 @@ export default {
       options: [],
       close_dialog: false,
       next_dialog: false,
+      image_url: null,
       result_headers: [
         { text: '順位', value: 'rank' },
         { text: '正解数', value: 'correct_num' },
@@ -164,6 +168,7 @@ export default {
           if (this.status === 'question' || this.status === 'answer') {
             this.quiz = JSON.parse(res.data.quiz)
             this.options = JSON.parse(res.data.options)
+            this.image_url = res.data.image_url
           } else if (this.status === 'result' && this.result_items.length === 0) {
             Array.from({length: this.total_quiz_num}, (_,x) => {
               this.result_headers.push({ text: `第${x+1}問`, value: `q${x+1}`})

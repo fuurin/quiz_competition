@@ -56,7 +56,8 @@ class Admin::CompetitionsController < Admin::BaseController
       title: @competition.quiz_set.title,
       total_quiz_num: @competition.quiz_set.quizzes.size,
       quiz: quiz.to_json(only: %i[number text]),
-      options: quiz.options.to_json(only: %i[number text is_correct_answer])
+      options: quiz.options.to_json(only: %i[number text is_correct_answer]),
+      image_url: image_url(@competition, quiz)
     }
   end
 
@@ -82,5 +83,17 @@ class Admin::CompetitionsController < Admin::BaseController
   def to_result
     @competition.update!(status: :result)
     render json: result_info
+  end
+
+  def image_url(competition, quiz)
+    if competition.question? && quiz.image_key.present?
+      return Rails.application.credentials.aws[:s3][:bucket_base_url] + quiz.image_key
+    end
+
+    if competition.answer? && quiz.answer_image_key.present?
+      return Rails.application.credentials.aws[:s3][:bucket_base_url] + quiz.answer_image_key
+    end
+
+    nil
   end
 end

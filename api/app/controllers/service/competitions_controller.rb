@@ -22,10 +22,23 @@ class Service::CompetitionsController < Service::BaseController
         total_quiz_num: quiz_set.quizzes.size,
         quiz: quiz.to_json(only: %i[number text]),
         options: options.to_json(only: competition.answer? ? %i[id number text is_correct_answer] : %i[id number text]),
-        answer: answer&.option&.id
-        image_url: Rails.application.credentials.aws[:s3][:bucket_base_url] +
-                   (competition.quiz? ? quiz.image_key : quiz.answer_image_key)
+        answer: answer&.option&.id,
+        image_url: image_url(competition, quiz)
       }
     end
+  end
+
+  private
+
+  def image_url(competition, quiz)
+    if competition.question? && quiz.image_key.present?
+      return Rails.application.credentials.aws[:s3][:bucket_base_url] + quiz.image_key
+    end
+
+    if competition.answer? && quiz.answer_image_key.present?
+      return Rails.application.credentials.aws[:s3][:bucket_base_url] + quiz.answer_image_key
+    end
+
+    nil
   end
 end
