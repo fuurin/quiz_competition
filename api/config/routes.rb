@@ -6,6 +6,10 @@ Rails.application.routes.draw do
     resources :quiz_sets, except: %i[new edit]
     resource :quizzes, only: :create
     resources :competitions, param: :rid, only: %i[show create update destroy]
+    namespace 'image' do
+      get 'upload_url'
+      put 'temporalize'
+    end
   end
   
   scope :service, module: 'service' do

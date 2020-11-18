@@ -25,6 +25,7 @@ export default ({ $axios, store, app, route }) => {
   })
 
   $axios.onError(e => {
+    console.log(e)
     if(e.response.status === 401 && route.path !== '/sign_in') {
       app.$cookies.remove(store.state.auth.SESSION_KEY)
       alert('ログインして下さい。')

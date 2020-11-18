@@ -54,27 +54,27 @@
             <v-container>
               <v-file-input
                 accept="image/*"
-                label="問題用画像"
-                small-chips
+                label="問題用画像 (1MBまで)"
                 outlined
                 prepend-icon="mdi-file-image"
-                @change="preview_image($event, quiz.image)"
+                :value="quiz.image_file"
+                @change="change_image($event, quiz)"
               ></v-file-input>
-              <v-img :src="quiz.image.url" 
-                    v-if="quiz.image.url"
-                    max-width="360" max-height="640" contain
+              <v-img :src="quiz.image_url" 
+                    v-if="quiz.image_url"
+                    max-width="640" max-height="360" contain
                     class="ml-8 mb-8"></v-img>
               <v-file-input
                 accept="image/*"
-                label="正解用画像"
-                small-chips
+                label="正解用画像 (1MBまで)"
                 outlined
                 prepend-icon="mdi-file-image-outline"
-                @change="preview_image($event, quiz.answer_image)"
+                :value="quiz.answer_image_file"
+                @change="change_image($event, quiz, for_answer=true)"
               ></v-file-input>
-              <v-img :src="quiz.answer_image.url" 
-                    v-if="quiz.answer_image.url"
-                    max-width="360" max-height="640" contain
+              <v-img :src="quiz.answer_image_url" 
+                    v-if="quiz.answer_image_url"
+                    max-width="640" max-height="360" contain
                     class="ml-8 mb-8"></v-img>
             </v-container>
           </v-container>
@@ -87,10 +87,10 @@
       </v-btn>
     </v-container>
     <v-container>
-      <v-btn @click="save">
+      <v-btn @click="save" :disabled='is_saving'>
         保存
       </v-btn>
-      <v-btn @click="save_and_back" class="ml-4">
+      <v-btn @click="save_and_back" :disabled='is_saving' class="ml-4">
         保存して戻る
       </v-btn>
     </v-container>
@@ -116,17 +116,17 @@ function empty_quiz(number = 1) {
       option.is_correct_answer = (i % 2 == 0)
       return option
     }),
-    image: {
-      url: "",
-      name: "",
-      type: ""
-    },
-    answer_image: {
-      url: "",
-      name: "",
-      type: ""
-    }
+    image_url: "",
+    answer_image_url: "",
+    image_file: null,
+    answer_image_file: null
   }
+}
+
+function image_key_to_empty_file(key) {
+  const file_name = key.split("/").pop().split("_").splice(2).join("_")
+  const file_type = `image/${file_name.split(".").pop()}`
+  return new File([""], file_name, { type: file_type })
 }
 
 export default {
@@ -139,8 +139,9 @@ export default {
   },
   data () {
     return {
-      quiz_set: { title: "" },
-      quizzes: []
+      quiz_set: { id: 0, title: "" },
+      quizzes: [],
+      is_saving: false
     }
   },
   created() {
@@ -157,9 +158,17 @@ export default {
             option.is_correct_answer = o.is_correct_answer
             return option
           })
+          if (q.image_key !== null && q.image_key !== '') {
+            quiz.image_url = res.data.image_base_url + q.image_key
+            quiz.image_file = image_key_to_empty_file(q.image_key)
+          }
+          if (q.answer_image_key !== null && q.answer_image_key !== '') {
+            quiz.answer_image_url = res.data.image_base_url + q.answer_image_key
+            quiz.answer_image_file = image_key_to_empty_file(q.answer_image_key)
+          }
           return quiz
         })
-        if(this.quizzes.length == 0) this.add_quiz()
+        if(this.quizzes.length === 0) this.add_quiz()
       })
       .catch((error) => {
         if (typeof error.response !== 'undefined' && error.response.status === 404) {
@@ -200,23 +209,63 @@ export default {
         quiz.options[x].number--
       }
     },
-    preview_image(file, image) {
-      image.url = file ? window.URL.createObjectURL(file) : ""
-      image.name = file ? file.name : ""
-      image.type = file ? file.type : ""
+    async change_image(file, quiz, for_answer = false) {
+      console.log(file)
+      if (typeof file === 'undefined') {
+        quiz[for_answer ? 'answer_image_url' : 'image_url'] = ''
+        quiz[for_answer ? 'answer_image_file' : 'image_file'] = null
+        return
+      }
+
+      this.$axios.get('/image/upload_url', { params: {
+        file_name: file.name,
+        file_type: file.type,
+        file_size: file.size,
+        quiz_set_id: this.quiz_set.id,
+        previous_file_url: for_answer ? quiz.answer_image_url : quiz.image_url
+      } } )
+        .then(async (res) => { 
+          await this.$axios.put(res.data.upload_url, file)
+            .catch((error) => {
+              this.$store.commit('snackbar/set', error.response.data.message)
+              quiz[for_answer ? 'answer_image_url' : 'image_url'] = ''
+              quiz[for_answer ? 'answer_image_file' : 'image_file'] = null
+            })
+          await this.$axios.put('/image/temporalize', { key: res.data.key })
+            .catch((error) => {
+              this.$store.commit('snackbar/set', error.response.data.message)
+              quiz[for_answer ? 'answer_image_url' : 'image_url'] = ''
+              quiz[for_answer ? 'answer_image_file' : 'image_file'] = null
+            })
+          quiz[for_answer ? 'answer_image_url' : 'image_url'] = res.data.url
+          quiz[for_answer ? 'answer_image_file' : 'image_file'] = file
+        }).catch((error) => {
+          this.$store.commit('snackbar/set', error.response.data.message)
+          quiz[for_answer ? 'answer_image_url' : 'image_url'] = ''
+          quiz[for_answer ? 'answer_image_file' : 'image_file'] = null
+        })
     },
     async save() {
+      this.is_saving = true
       this.$store.commit('snackbar/set', '保存中...')
       return await this.$axios.post('/quizzes', {
-        quiz_set: this.quiz_set,
-        quizzes: this.quizzes
+        quiz_set_id: this.quiz_set.id,
+        quizzes: this.quizzes.map((quiz) => {
+          return {
+            number: quiz.number,
+            text: quiz.text,
+            options: quiz.options,
+            image_url: quiz.image_url,
+            answer_image_url: quiz.answer_image_url,
+          }
+        })
       }).then(() => {
         this.$store.commit('snackbar/set', '保存しました。')
         return true
       }).catch(() => {
         this.$store.commit('snackbar/set', '保存に失敗しました。')
         return false
-      })
+      }).finally(() => { this.is_saving = false })
     },
     async save_and_back() {
       if (await this.save() === true) {

@@ -1,5 +1,4 @@
-class Admin::CompetitionsController < ApplicationController
-  before_action :authenticate_admin!
+class Admin::CompetitionsController < Admin::BaseController
   before_action :set_quiz_set, only: :create
   before_action :set_competition, except: :create
 
@@ -8,7 +7,7 @@ class Admin::CompetitionsController < ApplicationController
   end
 
   def create
-    if (competition = Competition.find_by(quiz_set: @quiz_set))
+    if (competition = @quiz_set.competition)
       render json: { rid: competition.rid }, status: 200
     else
       render json: { rid: Competition.create!(quiz_set: @quiz_set).rid }, status: 201
@@ -57,7 +56,8 @@ class Admin::CompetitionsController < ApplicationController
       title: @competition.quiz_set.title,
       total_quiz_num: @competition.quiz_set.quizzes.size,
       quiz: quiz.to_json(only: %i[number text]),
-      options: quiz.options.to_json(only: %i[number text is_correct_answer])
+      options: quiz.options.to_json(only: %i[number text is_correct_answer]),
+      image_url: image_url(@competition, quiz)
     }
   end
 

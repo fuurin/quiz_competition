@@ -1,3 +1,18 @@
+aws:
+  s3:
+    presigned_url:
+      expires_in: <%= 1.minutes.to_i %>
+
 models:
   competition:
     rid_length: 24
+
+controllers:
+  image_upload:
+    max_file_size: 1_048_576 # 1.megabytes
+    max_file_name_size: 200
+    allowed_file_types:
+      - image/jpg
+      - image/jpeg
+      - image/png
+      - image/gif

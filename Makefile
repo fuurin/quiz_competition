@@ -47,10 +47,10 @@ db_reset:
 	docker-compose exec api rails db:reset
 
 ce:
-	docker-compose exec api rails credendials:edit
+	docker-compose exec api rails credentials:edit
 
 cs:
-	docker-compose exec api rails credendials:show
+	docker-compose exec api rails credentials:show
 
 deploy_api:
 	cd api; \

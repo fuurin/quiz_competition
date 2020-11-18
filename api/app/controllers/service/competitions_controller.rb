@@ -1,6 +1,4 @@
-class Service::CompetitionsController < ApplicationController
-  before_action :authenticate_user!
-  
+class Service::CompetitionsController < Service::BaseController
   def show
     competition = current_user.competition
     if competition.result?
@@ -24,7 +22,8 @@ class Service::CompetitionsController < ApplicationController
         total_quiz_num: quiz_set.quizzes.size,
         quiz: quiz.to_json(only: %i[number text]),
         options: options.to_json(only: competition.answer? ? %i[id number text is_correct_answer] : %i[id number text]),
-        answer: answer&.option&.id
+        answer: answer&.option&.id,
+        image_url: image_url(competition, quiz)
       }
     end
   end
