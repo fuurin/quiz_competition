@@ -70,7 +70,7 @@ make deploy_all
 > make deploy_service
 ```
 
-## 心残り
+# 心残り
 - 機能
   - firebase notificationやOneSignalを使ったWebpushを使った自動進行
   - セッションキーにridつける(そうしないと別の大会参加するときに一回/competition行っちゃう)
