@@ -69,3 +69,24 @@ make deploy_all
 2回目以降は次のコマンドのみ
 > make deploy_service
 ```
+
+## 心残り
+- 機能
+  - firebase notificationやOneSignalを使ったWebpushを使った自動進行
+  - セッションキーにridつける(そうしないと別の大会参加するときに一回/competition行っちゃう)
+  - 同じemailで登録できなかったときやパスワードが短すぎたときのエラー内容
+  - クイズ大会中はクイズ集の編集禁止
+  - 参加人数とか、クイズ集数、問題数とかの制限
+  - クイズ集の作成・名前変更・削除
+- コード
+  - API
+    - Controllerが全体的にFat。RailsAPIの作法を先に勉強しとけばよかった
+      - imageは、quizのnullableカラムとして持たせるのではなく、QuestionImage, AnswerImageテーブルとし、それぞれhas_one制約で持たせればよかった
+        - null:trueは基本使わないこと！
+        - その上で、QuestionImage, AnswerImageはS3ImageHandlerというConcernをincludeすることで、`quiz.question_image.url`のような書き方ができる！
+      - JSONとなるハッシュはControllerで作って良いのか？
+    - エラーメッセージは最初からlocaleしとくべきだった。フロントでエラーメッセージ書くのめんどい。
+    - env, いらなくね？
+    - RSpec, rubocop
+  - フロント
+    - 特定ページの肥大化。コンポーネントを綺麗に分割するのは難しい？
