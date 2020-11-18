@@ -7,7 +7,7 @@ class Admin::CompetitionsController < Admin::BaseController
   end
 
   def create
-    if (competition = Competition.find_by(quiz_set: @quiz_set))
+    if (competition = @quiz_set.competition)
       render json: { rid: competition.rid }, status: 200
     else
       render json: { rid: Competition.create!(quiz_set: @quiz_set).rid }, status: 201
@@ -83,17 +83,5 @@ class Admin::CompetitionsController < Admin::BaseController
   def to_result
     @competition.update!(status: :result)
     render json: result_info
-  end
-
-  def image_url(competition, quiz)
-    if competition.question? && quiz.image_key.present?
-      return Rails.application.credentials.aws[:s3][:bucket_base_url] + quiz.image_key
-    end
-
-    if competition.answer? && quiz.answer_image_key.present?
-      return Rails.application.credentials.aws[:s3][:bucket_base_url] + quiz.answer_image_key
-    end
-
-    nil
   end
 end
