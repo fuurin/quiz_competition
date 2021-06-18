@@ -1,4 +1,7 @@
 Rails.application.routes.draw do
+  # ヘルスチェック作ってUptimeRobotで定期的に叩かせたい。AdminとServiceも。
+  root to: 'health_check#index'
+
   scope :admin, module: 'admin' do
     mount_devise_token_auth_for 'Admin', at: 'auth', controllers: {
       sessions: 'admin/auth/sessions'
