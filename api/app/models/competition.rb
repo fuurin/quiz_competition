@@ -62,6 +62,11 @@ class Competition < ApplicationRecord
   end
 
   def set_rid
+    if quiz_set.title == Settings.wedding.title
+      self.rid = Settings.wedding.id
+      return
+    end
+
     loop do
       self.rid = SecureRandom.alphanumeric(Settings.models.competition.rid_length)
       return unless Competition.find_by(rid: rid)
