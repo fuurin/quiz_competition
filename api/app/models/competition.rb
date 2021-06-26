@@ -12,6 +12,8 @@ class Competition < ApplicationRecord
   before_validation :set_first_quiz, :set_rid, on: :create
 
   def result
+    return [] if users.empty?
+
     # クイズの途中であれば、現在開示しているところまでの結果発表を行う
     quizzes = quiz_set.quizzes.where("number <#{'=' unless question?} #{quiz.number}")
 
