@@ -6,7 +6,7 @@ admin = Admin.create!(
 )
 
 ActiveRecord::Base.transaction do
-   ['テスト', '小松のクイズ', 'FY20 プロパー歓迎BBQ クイズ大会'].each do |title|
+   ['テスト', '小松のクイズ', 'FY20 プロパー歓迎BBQ クイズ大会', Settings.wedding.title].each do |title|
     QuizSet.create!(admin: admin, title: title)
   end
 end

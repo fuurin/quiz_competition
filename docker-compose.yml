@@ -8,7 +8,7 @@ services:
       PGTZ: UTC
       POSTGRES_PASSWORD: $POSTGRES_PASSWORD
     volumes:
-      - ./api/tmp/db:/var/lib/postgresql/data
+      - quiz_competition_db:/var/lib/postgresql/data
 
   api:
     build:
@@ -57,3 +57,7 @@ services:
       - "$SERVICE_PORT:$CONTAINER_PORT"
     depends_on:
       - api
+
+volumes:
+  quiz_competition_db:
+    external: true

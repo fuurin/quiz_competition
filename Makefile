@@ -5,6 +5,7 @@ up:
 # コンテナを作り直して起動
 init:
 	docker-compose down
+	docker volume create --name=quiz_competition_db
 	docker-compose up
 	make db_init
 
@@ -43,7 +44,9 @@ db_migrate:
 
 # 今あるschemaをそのまま使ってDBをリセットする
 # db:resetはseedも実行してくれる
+# ログインセッションが残っているとdropでエラーが起きるので、あらかじめdbコンテナを再起動する
 db_reset:
+	docker-compose restart db
 	docker-compose exec api rails db:reset
 
 ce:
